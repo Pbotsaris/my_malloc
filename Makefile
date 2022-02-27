@@ -3,7 +3,7 @@ OBJ=obj
 BIN=bin
 
 CFLAGS +=-W  -Wall -Wextra -g3 -Iinclude -fsanitize=address 
-CFLAGS_NO_SANINATIZE +=-W -Wall -Wextra -g3 -Iinclude
+CFLAGS_NO_SANINATIZE +=-W -Wall -Wextra -g3 -Iinclude -pedantic
 
 CC=gcc
 TARGET=$(BIN)/my_curl
