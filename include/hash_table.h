@@ -17,21 +17,13 @@
  * =====================================================================================
  */
 
+
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-#include <unistd.h>
-#include <string.h>
-#include <assert.h>
-#include <stdbool.h>
-#include <sys/mman.h>
+#include "../include/chunks.h"
 
 #define T_SIZE 64
-#define CHUNKS_CAPACITY 1024
 #define HASH 5381
 
 /*
@@ -44,20 +36,12 @@
 
  */
 
-typedef struct chunk {
-  void *key;
-  size_t pair;
-  struct chunk *next;
-}chunk_t;
+
 
 typedef struct map {
- chunk_t           chunk_table[T_SIZE];
- chunk_t           chunks[CHUNKS_CAPACITY];
- int               available_locations[CHUNKS_CAPACITY];
- int               location_index;
- size_t            chunks_count;
+ chunk_t           *chunk_table[T_SIZE];
 
- bool            (*insert) (struct map*, void*, size_t);                     /* Inserts a chunk to hash map . Ovewrites if same key */
+ void            (*insert) (struct map*, chunk_t*);                    /* Inserts a chunk to hash map . Ovewrites if same key */
  bool            (*move) (struct map*, chunk_t*, void*);               /* Removes a chunk and copy values to chunk_t*  argument. returns true if successful */
  void            (*print) (struct map*);                               /* Prints the value of every chunk in the hash map. */ 
 

@@ -19,7 +19,7 @@
 #include "../include/hash_table.h"
 
 /* PUBLIC */
-static bool insert(map_t *map, void *pointer, size_t size);
+static void insert(map_t *map, chunk_t *chunk);
 static bool move(map_t *map, chunk_t *chunk, void *ptr);
 static void print(map_t *map);
 
@@ -30,110 +30,78 @@ static unsigned int hash(void *pointer);
 
 void init_map(map_t *map)
 {
-
   map->insert           = insert;
   map->move             = move;
   map->print            = print;
-  map->location_index   = CHUNKS_CAPACITY;
-  map->chunks_count     = 0;
 
   for(int i = 0; i < T_SIZE; i++)
-    {
-    chunk_t chunk = { .key = NULL, .pair = 0, .next = NULL };
-    map->chunk_table[i] = chunk;
-   }
-
-  int index = CHUNKS_CAPACITY;
-
-  for(int i = 0; i < CHUNKS_CAPACITY  ; i++)
-  {
-      index--;
-      map->available_locations[i] = index;
-  }
-
+    map->chunk_table[i] = NULL;
+ 
 }
 
 
+
 /* PUBLIC METHODS */
-
-
-static bool insert(map_t *map, void *pointer, size_t size)
+static void insert(map_t *map, chunk_t *chunk)
 {
-  unsigned int slot    = hash(pointer);
-  chunk_t *entry       = &map->chunk_table[slot];
+  unsigned int slot    = hash(chunk->key);
+  chunk_t *entry       = map->chunk_table[slot];
 
-  if(!entry->key)
+  /* if nothing at head add to head */
+  if(!entry)
   {
-    map->chunk_table[slot].key = pointer;
-    map->chunk_table[slot].pair = size;
-    return true;
+    map->chunk_table[slot] = chunk;
+    return;
   }
-
-  if(map->chunks_count >= CHUNKS_CAPACITY - 1)
-    {
-    printf("alloced chunks capacity exceeded\n");
-    return false;
-    }
-
-//  printf("location: %i\n", map->available_locations[map->location_index]);
-  /* only add to chunks array if not the head of the linked list. */
-  chunk_t chunk = {.key = pointer, .pair = size, .next = NULL };
-  map->chunks[map->available_locations[map->location_index]] = chunk;
-
 
   while(entry != NULL)
   {
     /* match keys then update size */
-    if(entry->key == chunk.key)
+    if(entry->key == chunk->key)
     {
-      entry->pair = chunk.pair;
+      entry->pair = chunk->pair;
       break;
     }
 
     /* no match, add to tail */
     if(!entry->next)
     {
-     entry->next = &map->chunks[map->location_index];
+     entry->next = chunk;
      break;
     }
+
     entry = entry->next;
   }
-
-  map->chunks_count++;
-  map->location_index--;
-
-  return true;
 }
 
 /**/
 
-static bool move(map_t *map, chunk_t *chunk, void *ptr)
+static bool move(map_t *map, chunk_t *chunk, void *pointer)
 {
-  chunk->key            = ptr;
+  chunk->key            = pointer;
   unsigned int slot     = hash(chunk);
   chunk_t *prev         = NULL;
-  chunk_t *entry        = &map->chunks[slot];
+  chunk_t *entry        = map->chunk_table[slot];
 
   if(entry == NULL)
     return false;
 
   while(entry != NULL)
   {
-    if(entry->key == ptr)
+    if(entry->key == pointer)
     {
       if(prev)
-        /* if deleting first item of linked list */
         prev->next = entry->next;
       else
-        map->chunks[slot] = *(entry->next);
+        /* if deleting first item of linked list */
+        map->chunk_table[slot] = entry->next;
 
-      // chunk returned in the first second argument 
+     // chunk returned in the first second argument 
       chunk->key = entry->key;
       chunk->pair = entry->pair;
     }
     prev = entry;
     entry = entry->next;
-    map->chunks_count--;
     return true;
   }
  //  map->chunks[slot] = NULL;
@@ -147,7 +115,7 @@ static void print(map_t *map)
 {
   for(int i = 0; i < T_SIZE; i++)
   {
-    chunk_t *entry = &map->chunk_table[i];
+    chunk_t *entry = map->chunk_table[i];
 
     if(!entry || !entry->key)
       continue;
