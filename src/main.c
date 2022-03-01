@@ -1,28 +1,34 @@
-#include "../include/heap.h"
-
-heap_t heap;
-chunkrepo_t chunks;
-
-void *my_malloc(size_t size)
-{
-  static bool initialized = false;
-
-  if(!initialized)
-      initialize_heap(&heap, &chunks);
-
-  initialized = true;
-  return heap.alloc(&heap, &chunks, size);
-}
+#include "../include/my_malloc.h"
 
 int main(void)
 {
-
-heap.initialized = false;
-
 char *pointer = (char*)my_malloc(20);
-my_malloc(30);
 
-heap.dump(&heap);
+my_malloc(30);
+my_malloc(40);
+my_malloc(50);
+my_malloc(60);
+my_malloc(10);
+
+
+//  void *array_to_dump[CHUNKS_CAPACITY + 1];
+//  dump(array_to_dump);
+//  int i = 0;
+//
+//  while(array_to_dump[i])
+//    {
+//        printf("%p\n", array_to_dump[i]);
+//      i++;
+//    }
+//
+
+//heap.dump(&heap);
+
+dealloc();
+//chunk_t *chunk = heap.alloced_chunks.move(&heap.alloced_chunks, pointer);
+
+
+//printf("removed pointer: %p   | size: %lu\n", chunk->key, chunk->pair);
 
   return 0;
 }

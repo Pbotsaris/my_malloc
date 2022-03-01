@@ -22,7 +22,9 @@ typedef struct heap
 
 
   void         *(*alloc)(struct heap*, chunkrepo_t*, size_t);
-  void         (*dump) (struct heap*);
+  void         (*print_dump) (struct heap*);
+  void         (*dump) (struct heap*, chunk_t*[]);
+  void         (*dealloc)(struct heap*);
  }heap_t;
 
 void initialize_heap(heap_t *heap, chunkrepo_t *chunks);

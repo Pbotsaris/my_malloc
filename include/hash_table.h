@@ -42,8 +42,10 @@ typedef struct map {
  chunk_t           *chunk_table[T_SIZE];
 
  void            (*insert) (struct map*, chunk_t*);                    /* Inserts a chunk to hash map . Ovewrites if same key */
- bool            (*move) (struct map*, chunk_t*, void*);               /* Removes a chunk and copy values to chunk_t*  argument. returns true if successful */
+ chunk_t         *(*get) (struct map*, void*);
+ chunk_t        *(*move) (struct map*, void*);                         /* Removes a chunk and copy values to chunk_t*  argument. returns true if successful */
  void            (*print) (struct map*);                               /* Prints the value of every chunk in the hash map. */ 
+ void            (*dump)(struct map*, chunk_t*[]);
 
 }map_t;
 

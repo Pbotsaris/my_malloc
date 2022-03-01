@@ -20,8 +20,10 @@
 
 /* PUBLIC */
 static void insert(map_t *map, chunk_t *chunk);
-static bool move(map_t *map, chunk_t *chunk, void *ptr);
+static chunk_t *get(map_t *map, void *pointer);
+static chunk_t *move(map_t *map, void *pointer);
 static void print(map_t *map);
+static void dump(map_t *map, chunk_t *array_to_dump[]);
 
 /* PRIVATE */
 static unsigned int hash(void *pointer);
@@ -31,8 +33,10 @@ static unsigned int hash(void *pointer);
 void init_map(map_t *map)
 {
   map->insert           = insert;
+  map->get              = get;
   map->move             = move;
   map->print            = print;
+  map->dump             = dump;
 
   for(int i = 0; i < T_SIZE; i++)
     map->chunk_table[i] = NULL;
@@ -74,38 +78,54 @@ static void insert(map_t *map, chunk_t *chunk)
   }
 }
 
+static chunk_t *get(map_t *map, void *pointer)
+{
+  unsigned int slot     = hash(pointer);
+  chunk_t *chunk        = map->chunk_table[slot];
+
+  if(!chunk)
+      return NULL;
+
+  if(chunk->key == pointer)
+     return chunk;
+
+  while(chunk)
+  {
+    if(chunk->key == pointer)
+        return chunk;
+
+    chunk = chunk->next;
+  }
+ return NULL;
+}
+
+
 /**/
 
-static bool move(map_t *map, chunk_t *chunk, void *pointer)
+static chunk_t *move(map_t *map, void *pointer)
 {
-  chunk->key            = pointer;
-  unsigned int slot     = hash(chunk);
+  unsigned int slot     = hash(pointer);
   chunk_t *prev         = NULL;
-  chunk_t *entry        = map->chunk_table[slot];
+  chunk_t *chunk        = map->chunk_table[slot];
 
-  if(entry == NULL)
-    return false;
-
-  while(entry != NULL)
+  while(chunk)
   {
-    if(entry->key == pointer)
+    if(chunk->key == pointer)
     {
       if(prev)
-        prev->next = entry->next;
+        prev->next = chunk->next;
+      /* if deleting first item of linked list */
       else
-        /* if deleting first item of linked list */
-        map->chunk_table[slot] = entry->next;
+        map->chunk_table[slot] = chunk->next;
 
      // chunk returned in the first second argument 
-      chunk->key = entry->key;
-      chunk->pair = entry->pair;
+       return chunk;
     }
-    prev = entry;
-    entry = entry->next;
-    return true;
+    prev = chunk;
+    chunk = chunk->next;
   }
  //  map->chunks[slot] = NULL;
- return false;
+ return NULL;
 }
 
 
@@ -122,10 +142,32 @@ static void print(map_t *map)
 
     while(entry)
     {
-        printf("addr: %p |  size: %lu \n", entry->key, entry->pair);
+        printf("addr: %p |  size: %lu, | location : %d \n", entry->key, entry->pair, entry->location);
         entry = entry->next;
     }
   }
+}
+
+
+static void dump(map_t *map, chunk_t *array_to_dump[])
+{
+  int index = 0;
+
+for(int i = 0; i < T_SIZE; i++)
+  {
+    chunk_t *entry = map->chunk_table[i];
+
+    if(!entry || !entry->key)
+      continue;
+
+    while(entry)
+    {
+        array_to_dump[index] = entry;
+        entry = entry->next;
+        index++;
+    }
+  }
+  array_to_dump[index] = NULL;
 }
 
 /**/
