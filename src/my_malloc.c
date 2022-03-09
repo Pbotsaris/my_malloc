@@ -11,7 +11,7 @@ void *my_malloc(size_t size)
       initialize_heap(&heap, &chunks);
 
   initialized = true;
-  return heap.alloc(&heap, &chunks, size);
+    return heap.alloc(&heap, &chunks, size);
 }
 
 void dealloc(void)

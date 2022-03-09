@@ -2,14 +2,15 @@
 
 int main(void)
 {
-char *pointer = (char*)my_malloc(20);
+//char *pointer = (char*)my_malloc(20);
 
-my_malloc(30);
-my_malloc(40);
-my_malloc(50);
-my_malloc(60);
-my_malloc(10);
+//my_malloc(30);
+//my_malloc(40);
+//my_malloc(50);
+//my_malloc(60);
+//my_malloc(10);
 
+  printf("%lu\n", sizeof(page_t));
 
 //  void *array_to_dump[CHUNKS_CAPACITY + 1];
 //  dump(array_to_dump);
@@ -24,7 +25,7 @@ my_malloc(10);
 
 //heap.dump(&heap);
 
-dealloc();
+//dealloc();
 //chunk_t *chunk = heap.alloced_chunks.move(&heap.alloced_chunks, pointer);
 
 

@@ -44,7 +44,6 @@ void init_map(map_t *map)
 }
 
 
-
 /* PUBLIC METHODS */
 static void insert(map_t *map, chunk_t *chunk)
 {

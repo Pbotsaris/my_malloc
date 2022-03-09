@@ -23,7 +23,7 @@
 
 #include "../include/chunks.h"
 
-#define T_SIZE 64
+#define T_SIZE 24
 #define HASH 5381
 
 /*
@@ -35,7 +35,6 @@
  *      The chunk structs is an entry in the hash map.
 
  */
-
 
 
 typedef struct map {

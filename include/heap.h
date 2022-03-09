@@ -8,19 +8,21 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <sys/mman.h>
-#include "../include/hash_table.h"
+
+#include "../include/page.h"
 
 #define NUM_OF_PAGES 10
 
 typedef struct heap
 {
   char          *heap;
+  page_t        *pages;
   size_t        size;
   size_t        capacity;
   map_t         alloced_chunks;
   bool          initialized;
 
-
+  void         (*create_page)(struct heap*, page_t, size_t);
   void         *(*alloc)(struct heap*, chunkrepo_t*, size_t);
   void         (*print_dump) (struct heap*);
   void         (*dump) (struct heap*, chunk_t*[]);
