@@ -33,13 +33,13 @@ void dump(chunk_t *array_to_dump[])
 
 chunk_t *find_alloc(void *pointer)
 {
- return heap.alloced_chunks.get(&heap.alloced_chunks, pointer);
+ return map_get(&heap.alloced_chunks, pointer);
 }
 
 
 chunk_t *move_from_alloced_chunks(void *pointer)
 {
- return heap.alloced_chunks.move(&heap.alloced_chunks, pointer);
+ return map_move(&heap.alloced_chunks, pointer);
 }
 
 

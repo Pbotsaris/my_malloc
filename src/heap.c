@@ -12,6 +12,7 @@ void initialize_heap(heap_t *heap, chunkrepo_t *chunks)
   heap->dealloc             = dealloc; 
   heap->dump                = dump;
   heap->print_dump          = print_dump;
+
   heap->size                = 0;
   heap->initialized         = true;
   heap->capacity            = (size_t) sysconf(_SC_PAGESIZE) * NUM_OF_PAGES;
@@ -33,7 +34,7 @@ static void *alloc(heap_t *heap, chunkrepo_t *chunks, size_t size)
   heap->size                           += size;
   int location                          =  chunks->add_chunk(chunks, pointer, size);
   
-  heap->alloced_chunks.insert(&heap->alloced_chunks, &chunks->chunks[location]);
+  map_insert(&heap->alloced_chunks, &chunks->chunks[location]);
   
   return pointer;
 }
@@ -41,12 +42,12 @@ static void *alloc(heap_t *heap, chunkrepo_t *chunks, size_t size)
 static void print_dump(heap_t *heap)
 {
     printf("Alloced chunks:\n");
-    heap->alloced_chunks.print(&heap->alloced_chunks);
+    map_print(&heap->alloced_chunks);
 }
 
 static void dump(heap_t *heap, chunk_t *array_to_dump[])
 {
-  heap->alloced_chunks.dump(&heap->alloced_chunks, array_to_dump);
+  map_dump(&heap->alloced_chunks, array_to_dump);
 }
 
 static void dealloc(heap_t *heap)

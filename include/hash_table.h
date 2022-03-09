@@ -39,15 +39,12 @@
 
 typedef struct map {
  chunk_t           *chunk_table[T_SIZE];
-
- void            (*insert) (struct map*, chunk_t*);                    /* Inserts a chunk to hash map . Ovewrites if same key */
- chunk_t         *(*get) (struct map*, void*);
- chunk_t        *(*move) (struct map*, void*);                         /* Removes a chunk and copy values to chunk_t*  argument. returns true if successful */
- void            (*print) (struct map*);                               /* Prints the value of every chunk in the hash map. */ 
- void            (*dump)(struct map*, chunk_t*[]);
-
 }map_t;
 
 void init_map(map_t *map);
-
+void map_insert(map_t *map, chunk_t *chunk);
+chunk_t *map_get(map_t *map, void *pointer);
+chunk_t *map_move(map_t *map, void *pointer);
+void map_print(map_t *map);
+void map_dump(map_t *map, chunk_t *array_to_dump[]);
 #endif

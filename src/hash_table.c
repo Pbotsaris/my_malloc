@@ -19,33 +19,26 @@
 #include "../include/hash_table.h"
 
 /* PUBLIC */
-static void insert(map_t *map, chunk_t *chunk);
-static chunk_t *get(map_t *map, void *pointer);
-static chunk_t *move(map_t *map, void *pointer);
-static void print(map_t *map);
-static void dump(map_t *map, chunk_t *array_to_dump[]);
+void map_insert(map_t *map, chunk_t *chunk);
+chunk_t *map_get(map_t *map, void *pointer);
+chunk_t *map_move(map_t *map, void *pointer);
+void map_print(map_t *map);
+void map_dump(map_t *map, chunk_t *array_to_dump[]);
 
 /* PRIVATE */
 static unsigned int hash(void *pointer);
 
-/* PUBLIC INITIALIZER */
+
+/* PUBLIC FUNCTIONS */
 
 void init_map(map_t *map)
 {
-  map->insert           = insert;
-  map->get              = get;
-  map->move             = move;
-  map->print            = print;
-  map->dump             = dump;
-
   for(int i = 0; i < T_SIZE; i++)
     map->chunk_table[i] = NULL;
  
 }
 
-
-/* PUBLIC METHODS */
-static void insert(map_t *map, chunk_t *chunk)
+void map_insert(map_t *map, chunk_t *chunk)
 {
   unsigned int slot    = hash(chunk->key);
   chunk_t *entry       = map->chunk_table[slot];
@@ -77,7 +70,7 @@ static void insert(map_t *map, chunk_t *chunk)
   }
 }
 
-static chunk_t *get(map_t *map, void *pointer)
+ chunk_t *map_get(map_t *map, void *pointer)
 {
   unsigned int slot     = hash(pointer);
   chunk_t *chunk        = map->chunk_table[slot];
@@ -101,7 +94,7 @@ static chunk_t *get(map_t *map, void *pointer)
 
 /**/
 
-static chunk_t *move(map_t *map, void *pointer)
+chunk_t *map_move(map_t *map, void *pointer)
 {
   unsigned int slot     = hash(pointer);
   chunk_t *prev         = NULL;
@@ -130,7 +123,7 @@ static chunk_t *move(map_t *map, void *pointer)
 
 /**/
 
-static void print(map_t *map)
+void map_print(map_t *map)
 {
   for(int i = 0; i < T_SIZE; i++)
   {
@@ -148,7 +141,7 @@ static void print(map_t *map)
 }
 
 
-static void dump(map_t *map, chunk_t *array_to_dump[])
+void map_dump(map_t *map, chunk_t *array_to_dump[])
 {
   int index = 0;
 
