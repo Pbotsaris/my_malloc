@@ -21,7 +21,7 @@
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
 
-#include "../include/chunks.h"
+#include "../include/chunk_header.h"
 
 #define T_SIZE 24
 #define HASH 5381

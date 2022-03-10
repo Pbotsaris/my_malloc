@@ -1,17 +1,22 @@
 #include "../include/my_malloc.h"
 
-heap_t heap;
-chunkrepo_t chunks;
+ heap_t heap;
 
 void *my_malloc(size_t size)
 {
   static bool initialized = false;
 
   if(!initialized)
-      initialize_heap(&heap, &chunks);
+    {
+      initialize_heap(&heap, size);
+      initialized = true;
+    }
 
-  initialized = true;
-    return heap.alloc(&heap, &chunks, size);
+   void *pointer = heap.alloc(&heap, size);
+
+ // heap.size = size + sizeof(chunk_t);
+//  printf("outside:::: heap->size: %lu\n", heap.size);
+  return pointer;
 }
 
 void dealloc(void)
@@ -19,7 +24,7 @@ void dealloc(void)
   heap.dealloc(&heap);
 }
 
-/* functions bellow are used for united testing */
+/* functions bellow are used for testing only */
 
 void print_dump(void)
 {

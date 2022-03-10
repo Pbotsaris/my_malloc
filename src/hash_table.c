@@ -22,7 +22,7 @@
 void map_insert(map_t *map, chunk_t *chunk);
 chunk_t *map_get(map_t *map, void *pointer);
 chunk_t *map_move(map_t *map, void *pointer);
-void map_print(map_t *map);
+void map_print(map_t*map);
 void map_dump(map_t *map, chunk_t *array_to_dump[]);
 
 /* PRIVATE */
@@ -40,12 +40,13 @@ void init_map(map_t *map)
 
 void map_insert(map_t *map, chunk_t *chunk)
 {
-  unsigned int slot    = hash(chunk->key);
+  unsigned int slot    = hash(chunk->pointer);
   chunk_t *entry       = map->chunk_table[slot];
 
   /* if nothing at head add to head */
   if(!entry)
   {
+  //  printf("--? slot! %u, chunk: %p\n", slot, chunk->key);
     map->chunk_table[slot] = chunk;
     return;
   }
@@ -53,9 +54,9 @@ void map_insert(map_t *map, chunk_t *chunk)
   while(entry != NULL)
   {
     /* match keys then update size */
-    if(entry->key == chunk->key)
+    if(entry->pointer == chunk->pointer)
     {
-      entry->pair = chunk->pair;
+      entry->size = chunk->size;
       break;
     }
 
@@ -78,12 +79,12 @@ void map_insert(map_t *map, chunk_t *chunk)
   if(!chunk)
       return NULL;
 
-  if(chunk->key == pointer)
+  if(chunk->pointer == pointer)
      return chunk;
 
   while(chunk)
   {
-    if(chunk->key == pointer)
+    if(chunk->pointer == pointer)
         return chunk;
 
     chunk = chunk->next;
@@ -102,7 +103,7 @@ chunk_t *map_move(map_t *map, void *pointer)
 
   while(chunk)
   {
-    if(chunk->key == pointer)
+    if(chunk->pointer == pointer)
     {
       if(prev)
         prev->next = chunk->next;
@@ -129,12 +130,12 @@ void map_print(map_t *map)
   {
     chunk_t *entry = map->chunk_table[i];
 
-    if(!entry || !entry->key)
+    if(!entry || !entry->pointer)
       continue;
 
     while(entry)
     {
-        printf("addr: %p |  size: %lu, | location : %d \n", entry->key, entry->pair, entry->location);
+        printf("addr: %p |  size: %i\n", entry->pointer, entry->size);
         entry = entry->next;
     }
   }
@@ -149,7 +150,7 @@ for(int i = 0; i < T_SIZE; i++)
   {
     chunk_t *entry = map->chunk_table[i];
 
-    if(!entry || !entry->key)
+    if(!entry || !entry->pointer)
       continue;
 
     while(entry)

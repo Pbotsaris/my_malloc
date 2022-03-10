@@ -1,41 +1,38 @@
 #include "../include/heap.h"
 
-static void *alloc(heap_t *heap, chunkrepo_t *chunks, size_t size);
+static void *alloc(heap_t *heap, size_t size);
 static void dealloc(heap_t *heap);
 static void print_dump(heap_t *heap);
 static void dump(heap_t *heap, chunk_t *array_to_dump[]);
 
-void initialize_heap(heap_t *heap, chunkrepo_t *chunks)
+void initialize_heap(heap_t *heap, size_t size)
 {
   init_map(&heap->alloced_chunks);
   heap->alloc               = alloc;
   heap->dealloc             = dealloc; 
   heap->dump                = dump;
   heap->print_dump          = print_dump;
-
   heap->size                = 0;
-  heap->initialized         = true;
   heap->capacity            = (size_t) sysconf(_SC_PAGESIZE) * NUM_OF_PAGES;
-  size_t total_size         = heap->capacity + (CHUNKS_CAPACITY * sizeof(chunk_t));
-  heap->heap                = (char*) mmap(0, total_size , PROT_READ | PROT_WRITE,
+  heap->heap                = (void*) mmap(0, heap->capacity , PROT_READ | PROT_WRITE,
                                            MAP_ANON | MAP_PRIVATE, -1, 0); 
-
-  initialize_chunks(chunks, (chunk_t*)heap->heap + heap->capacity);
 }
 
-static void *alloc(heap_t *heap, chunkrepo_t *chunks, size_t size)
+static void *alloc(heap_t *heap, size_t size)
 {
    if(size == 0)
     return NULL;
-
-  assert(heap->size + size < heap->capacity);
-
-  void *pointer                         =  heap->heap + heap->size;
-  heap->size                           += size;
-  int location                          =  chunks->add_chunk(chunks, pointer, size);
   
-  map_insert(&heap->alloced_chunks, &chunks->chunks[location]);
-  
+  chunk_t *chunk                       =  (chunk_t*)(heap->heap + heap->size);
+  void *pointer                         =  heap->heap + (sizeof(chunk_t) + heap->size + 10);
+  heap->size                           += (size + sizeof(chunk_t) + 10);
+
+  chunk->pointer                      = pointer;
+  chunk->size                         = (int)size; 
+  chunk->next                         = NULL;
+
+  map_insert(&heap->alloced_chunks, chunk);
+
   return pointer;
 }
 

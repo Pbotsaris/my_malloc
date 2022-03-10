@@ -11,7 +11,7 @@
 
 #include "../include/page.h"
 
-#define NUM_OF_PAGES 10
+#define NUM_OF_PAGES 1
 
 typedef struct heap
 {
@@ -20,15 +20,14 @@ typedef struct heap
   size_t        size;
   size_t        capacity;
   map_t         alloced_chunks;
-  bool          initialized;
 
   void         (*create_page)(struct heap*, page_t, size_t);
-  void         *(*alloc)(struct heap*, chunkrepo_t*, size_t);
+  void         *(*alloc)(struct heap*, size_t);
   void         (*print_dump) (struct heap*);
   void         (*dump) (struct heap*, chunk_t*[]);
   void         (*dealloc)(struct heap*);
  }heap_t;
 
-void initialize_heap(heap_t *heap, chunkrepo_t *chunks);
+void initialize_heap(heap_t *heap, size_t size);
 
 #endif
