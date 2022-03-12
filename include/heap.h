@@ -15,10 +15,9 @@
 
 typedef struct heap
 {
-  char          *heap;
+  void          *next_allocation;
   page_t        *pages;
-  size_t        size;
-  size_t        capacity;
+  size_t        os_page_size;
   map_t         alloced_chunks;
 
   void         (*create_page)(struct heap*, page_t, size_t);

@@ -14,17 +14,16 @@ void *my_malloc(size_t size)
 
    void *pointer = heap.alloc(&heap, size);
 
- // heap.size = size + sizeof(chunk_t);
-//  printf("outside:::: heap->size: %lu\n", heap.size);
   return pointer;
 }
+
+/* functions bellow are used for testing only */
 
 void dealloc(void)
 {
   heap.dealloc(&heap);
 }
 
-/* functions bellow are used for testing only */
 
 void print_dump(void)
 {
@@ -34,6 +33,21 @@ void print_dump(void)
 void dump(chunk_t *array_to_dump[])
 {
   heap.dump(&heap, array_to_dump);
+}
+
+page_t *get_heap_pages(void)
+{
+  return heap.pages;
+}
+
+size_t get_heap_os_page_size()
+{
+  return heap.os_page_size;
+}
+
+void list_heap_pages(void)
+{
+  list_pages(heap.pages);
 }
 
 chunk_t *find_alloc(void *pointer)

@@ -7,30 +7,41 @@ static void dump(heap_t *heap, chunk_t *array_to_dump[]);
 
 void initialize_heap(heap_t *heap, size_t size)
 {
-  init_map(&heap->alloced_chunks);
   heap->alloc               = alloc;
   heap->dealloc             = dealloc; 
   heap->dump                = dump;
   heap->print_dump          = print_dump;
-  heap->size                = 0;
-  heap->capacity            = (size_t) sysconf(_SC_PAGESIZE) * NUM_OF_PAGES;
-  heap->heap                = (void*) mmap(0, heap->capacity , PROT_READ | PROT_WRITE,
-                                           MAP_ANON | MAP_PRIVATE, -1, 0); 
+  heap->os_page_size        = sysconf(_SC_PAGESIZE);
+  heap->next_allocation     = 0x00; // first allocation starts at addr 0
+
+  /* create first page */
+  heap->pages = create_page(heap->next_allocation, size, heap->os_page_size);
+  heap->next_allocation = (void*)((int8_t*)heap->pages->buffer + 1);
+  
+  /* init hash table for alloced chunks */
+  init_map(&heap->alloced_chunks);
 }
 
 static void *alloc(heap_t *heap, size_t size)
 {
    if(size == 0)
-    return NULL;
+     return NULL;
+
+  page_t *page = find_page(heap->pages, size);
+
+  // if page not aviable create a new one
+  if(!page)
+  {
+    page = create_page(heap->next_allocation, size, heap->os_page_size);
+    heap->pages = add_page(heap->pages, page);
+    heap->next_allocation = (void*)((int8_t*)page->buffer + 1);
+  }
   
-  chunk_t *chunk                       =  (chunk_t*)(heap->heap + heap->size);
-  void *pointer                         =  heap->heap + (sizeof(chunk_t) + heap->size + 10);
-  heap->size                           += (size + sizeof(chunk_t) + 10);
-
-  chunk->pointer                      = pointer;
-  chunk->size                         = (int)size; 
-  chunk->next                         = NULL;
-
+  chunk_t *chunk                       =  (chunk_t*)((int8_t*)page->buffer + page->size);
+  void *pointer                        =  ((int8_t*)page->buffer) + (sizeof(chunk_t) + page->size);
+  page->size                          += (u_int32_t)(size + sizeof(chunk_t));
+ 
+  initialize_chunk(chunk, pointer, size);
   map_insert(&heap->alloced_chunks, chunk);
 
   return pointer;
@@ -49,7 +60,14 @@ static void dump(heap_t *heap, chunk_t *array_to_dump[])
 
 static void dealloc(heap_t *heap)
 {
-  munmap(heap->heap, heap->capacity + (CHUNKS_CAPACITY * sizeof(chunk_t)));
+
+  page_t *page = heap->pages;
+
+  while(page)
+    {
+      munmap(page->buffer, page->capacity);
+      page = page->next;
+    }
 }
 
 //void hfree(void *pointer)

@@ -13,8 +13,11 @@
 
 typedef struct chunk {
   void *pointer;
-  int size;
+  u_int32_t size;
   struct chunk *next;
 }chunk_t;
+
+
+void initialize_chunk(chunk_t *chunk, void *pointer, size_t size);
 
 #endif

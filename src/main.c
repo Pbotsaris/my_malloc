@@ -4,8 +4,8 @@ int main(void)
 {
 //char *pointer = (char*)my_malloc(20);
 
-//my_malloc(30);
-//my_malloc(40);
+my_malloc(30);
+my_malloc(5000);
 //my_malloc(50);
 //my_malloc(60);
 //my_malloc(10);
