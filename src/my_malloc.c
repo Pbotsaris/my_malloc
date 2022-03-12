@@ -50,6 +50,12 @@ void list_heap_pages(void)
   list_pages(heap.pages);
 }
 
+u_int8_t get_bin_index(size_t size)
+{
+  return heap.bin.get_index(size);
+
+}
+
 chunk_t *find_alloc(void *pointer)
 {
  return map_get(&heap.alloced_chunks, pointer);

@@ -5,9 +5,9 @@
 #include <sys/mman.h>
 #include "../include/hash_table.h"
 
-#define PAGE_SMALL 1                 /* 10 x OS page size (4K) */
-#define PAGE_MEDIUM 10              /* 100 x OS page size (40K) */
-#define PAGE_LARGE 100              /* 1000 x OS page size (400K) */
+#define PAGE_SMALL 1                 /* 10 x OS page size (~4K) */
+#define PAGE_MEDIUM 10              /* 100 x OS page size (~40K) */
+#define PAGE_LARGE 100              /* 1000 x OS page size (~400K) */
 
 /*  Allocations larger than 400K takes a page the size of the allocation */
 

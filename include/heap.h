@@ -7,9 +7,9 @@
 #include <string.h>
 #include <assert.h>
 #include <stdbool.h>
-#include <sys/mman.h>
 
 #include "../include/page.h"
+#include "../include/bin.h"
 
 #define NUM_OF_PAGES 1
 
@@ -19,6 +19,7 @@ typedef struct heap
   page_t        *pages;
   size_t        os_page_size;
   map_t         alloced_chunks;
+  bin_t         bin;
 
   void         (*create_page)(struct heap*, page_t, size_t);
   void         *(*alloc)(struct heap*, size_t);

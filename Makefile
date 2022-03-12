@@ -6,7 +6,7 @@ BIN=bin
 
 CFLAGS +=-W  -Wall -Wextra -g3 -Iinclude -lm -fsanitize=address 
 CFLAGS_NO_SANINATIZE +=-W -Wall -Wextra -g3 -Iinclude -pedantic
-TESTFLAGS += -lcriterion -I../include -g3 -Wall -Wextra -pedantic -fsanitize=address 
+TESTFLAGS += -lcriterion -I../include -g3 -Wall -Wextra -pedantic -lm -fsanitize=address 
 
 CC=gcc
 TARGET=$(BIN)/my_curl

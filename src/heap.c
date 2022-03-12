@@ -20,6 +20,9 @@ void initialize_heap(heap_t *heap, size_t size)
   
   /* init hash table for alloced chunks */
   init_map(&heap->alloced_chunks);
+
+  /* init bin for freed chunks */
+  initialize_bin(&heap->bin);
 }
 
 static void *alloc(heap_t *heap, size_t size)

@@ -4,13 +4,16 @@ int main(void)
 {
 //char *pointer = (char*)my_malloc(20);
 
-my_malloc(30);
-my_malloc(5000);
 //my_malloc(50);
 //my_malloc(60);
 //my_malloc(10);
 
-  printf("%lu\n", sizeof(page_t));
+  
+  printf("4 -> index: %d\n", get_index(4));
+  printf("8 -> index: %d\n", get_index(8));
+  printf("32 -> index: %d\n", get_index(32));
+  printf("32768 -> index: %d\n", get_index(32768));
+  printf("2049-> index: %d\n", get_index(2049));
 
 //  void *array_to_dump[CHUNKS_CAPACITY + 1];
 //  dump(array_to_dump);
