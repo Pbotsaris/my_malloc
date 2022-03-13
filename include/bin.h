@@ -48,9 +48,11 @@
 
 typedef struct bin
 {
-  chunk_t *table[BIN_SIZE];
+  chunk_t         *table[BIN_SIZE];
 
-  u_int8_t (*get_index)(size_t);
+  u_int8_t       (*get_index)(size_t);
+  chunk_t        *(*add)(struct bin*, chunk_t*);
+  chunk_t        *(*find)(struct bin*, chunk_t*);
   }bin_t;
 
 

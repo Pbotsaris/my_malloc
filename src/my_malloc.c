@@ -24,7 +24,6 @@ void dealloc(void)
   heap.dealloc(&heap);
 }
 
-
 void print_dump(void)
 {
   heap.print_dump(&heap);
@@ -53,12 +52,21 @@ void list_heap_pages(void)
 u_int8_t get_bin_index(size_t size)
 {
   return heap.bin.get_index(size);
-
 }
 
 chunk_t *find_alloc(void *pointer)
 {
  return map_get(&heap.alloced_chunks, pointer);
+}
+
+chunk_t *add_to_bin(chunk_t *chunk)
+{
+  return heap.bin.add(&heap.bin, chunk);
+}
+
+chunk_t *find_freed(chunk_t *chunk)
+{
+ return heap.bin.find(&heap.bin, chunk);
 }
 
 

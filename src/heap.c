@@ -16,7 +16,9 @@ void initialize_heap(heap_t *heap, size_t size)
 
   /* create first page */
   heap->pages = create_page(heap->next_allocation, size, heap->os_page_size);
-  heap->next_allocation = (void*)((int8_t*)heap->pages->buffer + 1);
+  heap->next_allocation = (void*)((int8_t*)heap->pages->buffer + (heap->pages->capacity + 1));
+
+
   
   /* init hash table for alloced chunks */
   init_map(&heap->alloced_chunks);
@@ -37,7 +39,7 @@ static void *alloc(heap_t *heap, size_t size)
   {
     page = create_page(heap->next_allocation, size, heap->os_page_size);
     heap->pages = add_page(heap->pages, page);
-    heap->next_allocation = (void*)((int8_t*)page->buffer + 1);
+    heap->next_allocation = (void*)((int8_t*)page->buffer + (page->capacity + 1));
   }
   
   chunk_t *chunk                       =  (chunk_t*)((int8_t*)page->buffer + page->size);

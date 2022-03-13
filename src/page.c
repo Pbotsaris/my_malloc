@@ -4,7 +4,7 @@
 static page_t *initialize_page(void *buffer, size_t size);
 static void *alloc_page_buffer(void *next_allocation, size_t alloc_size, size_t *return_size, size_t os_page_size);
 static size_t check_size(size_t size, size_t os_page_size);
-
+static bool has_capacity(page_t *page, size_t size);
 
 /* PUBLIC  */
 
@@ -12,6 +12,7 @@ page_t *create_page(void *next_allocation, size_t alloc_size, size_t os_page_siz
 {
   size_t return_size;
   /* create buffer for the first page */
+
   void *buffer = alloc_page_buffer(next_allocation, alloc_size, &return_size, os_page_size);
   return initialize_page(buffer, return_size);
 }
@@ -21,10 +22,10 @@ page_t *find_page(page_t *page, size_t size)
 {
   page_t *temp = page;
 
-
   while(temp)
   {
-     if(size <= temp->capacity)
+      /* if page has correct size also checks if there is any capacity left */
+     if(size <= temp->capacity && has_capacity(page, size))
         break;
 
     temp = temp->next;
@@ -69,10 +70,11 @@ void list_pages(page_t *root_page)
 static page_t *initialize_page(void *buffer, size_t size)
 {
 
+  /* adding the metadata to the top of the buffer */
+
   page_t *page                 = (page_t*)buffer;
   page->capacity               = size; 
   page->buffer                 = (void*)((int32_t*)buffer + sizeof(page_t));
-  /* adding page metadate to the top of the buffer */
   page->size                   = sizeof(page_t);
   page->next                   = NULL;
 
@@ -81,14 +83,15 @@ static page_t *initialize_page(void *buffer, size_t size)
 
 static void *alloc_page_buffer(void *next_allocation, size_t alloc_size, size_t *return_size, size_t os_page_size)
 {
-
   
+  /*  check_size will return 0 if the size > PAGE_LARGE */
+
   size_t page_multiplier     = check_size(alloc_size, os_page_size);
 
-  /* for huge allocations the page will grow to fit the exact size of the allocation */
- if(page_multiplier > 0 )
-    alloc_size                     = (u_int32_t) os_page_size * page_multiplier;
+  /* for huge allocations the page will grow to fit the exact size of the requested allocation */
 
+ if(page_multiplier != 0 )
+    alloc_size               = (u_int32_t) os_page_size * page_multiplier;
 
   void *buffer               = (void*) mmap(next_allocation, alloc_size , PROT_READ | PROT_WRITE,
                                            MAP_ANON | MAP_PRIVATE, -1, 0);
@@ -102,7 +105,6 @@ static void *alloc_page_buffer(void *next_allocation, size_t alloc_size, size_t 
 
 static size_t check_size(size_t size, size_t os_page_size)
 {
-
   if(size <=  os_page_size * PAGE_SMALL)
     return PAGE_SMALL;
   else if(size <= os_page_size * PAGE_MEDIUM)
@@ -110,9 +112,16 @@ static size_t check_size(size_t size, size_t os_page_size)
   else if(size <= os_page_size * PAGE_LARGE)
      return PAGE_LARGE;
   else
-     return -1;
+     return 0;
 }
 
+static bool has_capacity(page_t *page, size_t size)
+{
+  size_t capacity_left = page->capacity - page->size;
+
+  return capacity_left >= size;
+
+}
 
 
 
