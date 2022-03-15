@@ -1,22 +1,10 @@
 #include <criterion/criterion.h>
 #include "../include/my_malloc.h"
 
-/* TODO: TEST WILL MULTIPLE ALLOCATION RANGED SIZE IS CRASH IN PAGES 
-*
-*   stack trace
-    #0 0x5616808aa044 in initialize_page src/page.c:73
-    #1 0x5616808a9d5c in create_page src/page.c:16
-    #2 0x5616808a975c in alloc src/heap.c:38
-    #3 0x5616808a9ad7 in my_malloc src/my_malloc.c:15
-*
-*
-*
-* */
-
  size_t fixed_sizes[9] = {4, 8, 16, 32, 64, 128, 256, 512, 0 };
 
  size_t ranged_sizes[31] = {
-                           1014, 1018, 1024,              // 8
+                           514, 1018, 1024,              // 8
                            1025, 2000, 2048,              // 9
                            2049, 3000, 4096,              // 10
                            4097, 6000, 8192,              // 11
@@ -60,6 +48,42 @@ Test(asserts, get_correct_bin_index_fixed_sizes)
    }
 
   dealloc();
+}
+
+
+
+Test(asserts, bin_doubly_linked_list_is_sorted)
+{
+
+ size_t size = 1026;
+ chunk_t *head;
+ chunk_t *prev = NULL;
+
+  while(size < 1035)
+  {
+
+   void *pointer  = my_malloc(size);
+
+   chunk_t *chunk = move_from_alloced_chunks(pointer);
+    
+   add_to_bin(chunk);
+
+    if(size == 1026)
+      head = find_freed(chunk);
+
+  size++;
+  }
+
+  while(head)
+  {
+
+      if(prev)
+         cr_assert(prev->size < head->size, "List is not sorted correctly.  %d  <-- prev | current --> %d", prev->size, head->size);
+      
+      prev = head;
+      head = head->next;
+  }
+
 }
 
 
@@ -126,7 +150,39 @@ Test(asserts, add_ranged_sized_chunks_to_bin)
   dealloc();
 }
 
+Test(asserts, bin_doubly_linked_list_is_correct)
+{
+int i = 0;
+chunk_t *head;
+  while(i < 5)
+  {
+   void *pointer  = my_malloc(8);
 
+   chunk_t *chunk = move_from_alloced_chunks(pointer);
+    
+   add_to_bin(chunk);
+
+    if(i == 0)
+      head = find_freed(chunk);
+
+   i++;
+  }
+
+  int j = 0;
+  chunk_t *prev;
+
+  while(head)
+  {
+    if(j == 0)
+       cr_assert(head->prev == NULL, "Head->prev should be NULL, was -> %p", (void*)head->prev);
+    else
+       cr_assert(head->prev == prev, "%p prev should be -> %p and was -> %p",(void*)head, (void*)prev, (void*)head->prev);
+
+    prev = head;
+    head = head->next;
+   j++;
+  }
+}
 
 
 

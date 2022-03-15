@@ -17,6 +17,11 @@ void *my_malloc(size_t size)
   return pointer;
 }
 
+void my_free(void *pointer)
+{
+  heap.free(&heap, pointer);
+}
+
 /* functions bellow are used for testing only */
 
 void dealloc(void)
@@ -68,7 +73,6 @@ chunk_t *find_freed(chunk_t *chunk)
 {
  return heap.bin.find(&heap.bin, chunk);
 }
-
 
 chunk_t *move_from_alloced_chunks(void *pointer)
 {

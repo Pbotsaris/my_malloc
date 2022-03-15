@@ -41,7 +41,7 @@ typedef struct map {
  chunk_t           *chunk_table[T_SIZE];
 }map_t;
 
-void init_map(map_t *map);
+void initialize_map(map_t *map);
 void map_insert(map_t *map, chunk_t *chunk);
 chunk_t *map_get(map_t *map, void *pointer);
 chunk_t *map_move(map_t *map, void *pointer);

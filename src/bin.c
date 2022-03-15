@@ -4,7 +4,6 @@ static u_int8_t get_index(size_t size);
 static chunk_t *add(bin_t *bin, chunk_t *chunk);
 chunk_t *find(bin_t *bin, chunk_t *chunk);
 
-
 void initialize_bin(bin_t *bin)
 {
    bin->get_index        = get_index;
@@ -30,6 +29,7 @@ static chunk_t *add(bin_t *bin, chunk_t *chunk)
     if(!current->next)
     {
         current->next  = chunk;
+        chunk->prev    = current;
         chunk->next    = NULL;
         break;
     }
@@ -37,14 +37,16 @@ static chunk_t *add(bin_t *bin, chunk_t *chunk)
     if(chunk->size >= current->size && chunk->size <= current->next->size)
     {
        next           = current->next;
+       next->prev     = chunk;
        current->next  = chunk;
+       chunk->prev    = current;
        chunk->next    = next;
+       break;
     }
 
     current          = current->next;
 
   }
-
   return bin->table[index];
 }
 

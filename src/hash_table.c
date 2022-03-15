@@ -31,7 +31,7 @@ static unsigned int hash(void *pointer);
 
 /* PUBLIC FUNCTIONS */
 
-void init_map(map_t *map)
+void initialize_map(map_t *map)
 {
   for(int i = 0; i < T_SIZE; i++)
     map->chunk_table[i] = NULL;

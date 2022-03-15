@@ -9,6 +9,7 @@
 #include <stdbool.h>
 
 #include "../include/page.h"
+#include "../include/hash_table.h"
 #include "../include/bin.h"
 
 #define NUM_OF_PAGES 1
@@ -23,6 +24,7 @@ typedef struct heap
 
   void         (*create_page)(struct heap*, page_t, size_t);
   void         *(*alloc)(struct heap*, size_t);
+  void         (*free)(struct heap*, void*);
   void         (*print_dump) (struct heap*);
   void         (*dump) (struct heap*, chunk_t*[]);
   void         (*dealloc)(struct heap*);
@@ -31,3 +33,9 @@ typedef struct heap
 void initialize_heap(heap_t *heap, size_t size);
 
 #endif
+
+
+/* 
+*  NOTE: you have a problem with garbage collection. You need to be able to identify all the freed chunks in the bin for a page
+*        in order to return it to the os.
+*/

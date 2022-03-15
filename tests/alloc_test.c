@@ -107,8 +107,53 @@ bool contains(chunk_t *pointer_array[], void *pointer)
    dealloc();
  
  }
- 
-  
+
+ Test(asserts, allocate_new_pages_when_page_is_full)
+{
+  /* PAGE 01
+   * allocate 1 page worth of chunks
+   * 4096 (page size) - 40 (page header) = 4060
+   * 4056 / 4 (four allocations) = 1014
+   */
+  my_malloc(966); // 966 + 48 = 1014
+  my_malloc(966); 
+  my_malloc(966);
+  my_malloc(966);
+
+  page_t *pages = get_heap_pages();
+
+  cr_assert(pages && !pages->next, "collect test did not allocate right number of pages");
+
+  // PAGE 02
+
+  my_malloc(840); 
+  my_malloc(855);
+
+  cr_assert(pages && pages->next && !pages->next->next , "collect test did not allocate right number of pages");
+
+  dealloc();
+
+}
+
+
+  Test(asserts, pages_holds_a_reference_to_its_allocated_chunk)
+{
+  void *pointer = my_malloc(8);
+  void *pointer_two = my_malloc(8);
+  void *pointer_three = my_malloc(8);
+
+  page_t *pages = get_heap_pages();
+  chunk_t *page_chunks = pages->chunks;
+
+  cr_assert(pointer == page_chunks->pointer, "pointer does not match chunk pointer. Was -> %p should be -> %p", page_chunks->pointer, pointer);
+  page_chunks = page_chunks->next_in_page;
+  cr_assert(pointer_two == page_chunks->pointer, "pointer does not match chunk pointer. Was -> %p should be -> %p", page_chunks->pointer, pointer_two);
+  page_chunks = page_chunks->next_in_page;
+  cr_assert(pointer_three == page_chunks->pointer, "pointer does not match chunk pointer. Was -> %p should be -> %p", page_chunks->pointer, pointer_three);
+
+    dealloc();
+
+}
   
   Test(asserts, move_pointer_from_allocated_chunks)
   {
