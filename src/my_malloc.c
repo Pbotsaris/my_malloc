@@ -74,10 +74,14 @@ chunk_t *find_freed(chunk_t *chunk)
  return heap.bin.find(&heap.bin, chunk);
 }
 
+void print_freed(void)
+{
+  heap.bin.print(&heap.bin);
+}
+
+
 chunk_t *move_from_alloced_chunks(void *pointer)
 {
  return map_move(&heap.alloced_chunks, pointer);
 }
-
-
 

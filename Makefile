@@ -9,7 +9,7 @@ CFLAGS_NO_SANINATIZE +=-W -Wall -Wextra -g3 -Iinclude -pedantic
 TESTFLAGS += -lcriterion -I../include -g3 -Wall -Wextra -pedantic -lm -fsanitize=address 
 
 CC=gcc
-TARGET=$(BIN)/my_curl
+TARGET=$(BIN)/my_malloc
 RM=rm -rf
 
 $(shell mkdir -p obj bin)

@@ -2,29 +2,32 @@
 
 int main(void)
 {
+ void *p1 = my_malloc(966); // 966 + 48 = 1014
+ void *p2 = my_malloc(966); 
+ void *p3 = my_malloc(966);
+ void *p4 = my_malloc(966);
 
-  my_malloc(966); // 966 + 48 = 1014
-  my_malloc(966); 
-  my_malloc(966);
-  void* pointer = my_malloc(966);
+//  page_t *pages = get_heap_pages();
 
-  page_t *pages_two = get_heap_pages();
+  // PAGE 02
 
- // list_pages(pages_two);
+  void *p5 = my_malloc(840); 
+  my_malloc(855);
 
-  printf("---------------------------------------------------------------\n\n\n");
-  void *pointer_one = my_malloc(840); 
-  void *pointer_two = my_malloc(855);
+  my_free(p1);
+ // my_free(p2);
+//  my_free(p3);
+ // my_free(p4);
+//  my_free(p5);
 
-  printf("---------------------------------------------------------------------------\n\n\n");
-//  my_free(pointer_one);
- // my_free(pointer);
 
-  page_t *pages = get_heap_pages();
+   print_freed();
 
-  //list_pages(pages_two);
-  list_pages(pages);
 
-  dealloc();
+   dealloc();
+
   return 0;
 }
+
+
+//0x7ffff7fa94be

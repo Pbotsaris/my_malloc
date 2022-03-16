@@ -2,13 +2,25 @@
 
 static u_int8_t get_index(size_t size);
 static chunk_t *add(bin_t *bin, chunk_t *chunk);
-chunk_t *find(bin_t *bin, chunk_t *chunk);
+/* used for testing and bin visualization only */
+static chunk_t *find(bin_t *bin, chunk_t *chunk);
+static void print(bin_t *bin);
+
+
+ const char *BIN_SIZE_LABELS[18] = {"4", "8", "16", "32", "128", "256", "512",
+                                    "513 - 1024", "1025 - 2048" , "2049 - 4096" ,
+                                    "4097 - 8192" , "8193 - 16384" , "16385 - 32768",
+                                    "32769 - 65536" , "65537 - 131072" ,
+                                    "131073 - 262144" , "262145 - 409600", "MAX"
+                                     };
+  
 
 void initialize_bin(bin_t *bin)
 {
    bin->get_index        = get_index;
    bin->add              = add;
    bin->find             = find;
+   bin->print            = print;
 }
 
 static chunk_t *add(bin_t *bin, chunk_t *chunk)
@@ -47,13 +59,14 @@ static chunk_t *add(bin_t *bin, chunk_t *chunk)
     current          = current->next;
 
   }
+
   return bin->table[index];
 }
 
 /* this function scans for the whole bin for a pointer 
 *  it is used for testing only and does not affect performance
 */
-chunk_t *find(bin_t *bin, chunk_t *chunk)
+static chunk_t *find(bin_t *bin, chunk_t *chunk)
 {
   for(int i = 0; i < BIN_SIZE; i++)
   {
@@ -69,6 +82,25 @@ chunk_t *find(bin_t *bin, chunk_t *chunk)
       }
   }
   return NULL;
+}
+
+static void print(bin_t *bin)
+{
+  for(int i = 0; i < BIN_SIZE; i++)
+  {
+    chunk_t *chunks = bin->table[i];
+
+      printf("%s: ", BIN_SIZE_LABELS[i]);
+
+      while(chunks)
+      {
+      printf("[addr: %p, s: %d ]", chunks->pointer, chunks->size);
+      if(chunks->next)
+       printf(" -> ");
+      chunks = chunks->next;
+      }
+      printf(" \n");
+  }
 }
 
 static u_int8_t get_index(size_t size)

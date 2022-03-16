@@ -53,18 +53,13 @@ static void *alloc(heap_t *heap, size_t size)
 
   add_chunk_to_page(chunk, page);
 
-  //if(heap->pages->next)
-    //  printf("page->next->size from heap: %u\n", heap->pages->next->size);
-
-  // if(heap->pages->next && heap->pages->next->next)
-    //  printf("page->next->nextsize from heap: %u\n", heap->pages->next->next->size);
-//  printf("page size after adding chunk %u\n", page->size);
   return pointer;
 }
 
 static void hfree(heap_t *heap, void *pointer)
 {
   chunk_t *freed_chunk                = map_move(&heap->alloced_chunks, pointer);
+
   assert(freed_chunk && "Pointer does not exist\n");
 
   heap->bin.add(&heap->bin, freed_chunk);
@@ -108,13 +103,13 @@ void collect(heap_t *heap)
     {
       if(page->alloced_count == 0)
       {
-      remove_page_chunks_from_bin(page);
-      remove_page(heap->pages, page);
-      munmap(page->buffer, page->capacity);
+        remove_page_chunks_from_bin(page);
+        remove_page(heap->pages, page);
+        munmap(page->buffer, page->capacity);
       }
 
-    page = page->next;
-    }
+   page = page->next;
+   }
 }
 
 static page_t *select_heap_page(heap_t *heap, size_t size)

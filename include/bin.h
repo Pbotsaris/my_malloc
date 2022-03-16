@@ -53,9 +53,13 @@ typedef struct bin
   u_int8_t       (*get_index)(size_t);
   chunk_t        *(*add)(struct bin*, chunk_t*);
   chunk_t        *(*find)(struct bin*, chunk_t*);
+  void            (*print)(struct bin*);
   }bin_t;
 
 
 void initialize_bin(bin_t *bin);
+
+
+ 
 
 #endif
