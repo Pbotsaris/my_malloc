@@ -12,13 +12,15 @@ int main(void)
   // PAGE 02
 
   void *p5 = my_malloc(840); 
-  my_malloc(855);
+  void *p6 = my_malloc(855);
 
-  my_free(p1);
- // my_free(p2);
-//  my_free(p3);
- // my_free(p4);
-//  my_free(p5);
+   my_free(p1);
+   my_free(p2);
+   my_free(p3);
+   my_free(p4);
+   my_free(p5);
+   my_free(p6);
+  
 
 
    print_freed();

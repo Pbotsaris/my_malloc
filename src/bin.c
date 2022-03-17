@@ -2,36 +2,42 @@
 
 static u_int8_t get_index(size_t size);
 static chunk_t *add(bin_t *bin, chunk_t *chunk);
+static void remove_from_head(bin_t *bin,  chunk_t *chunk);
+
 /* used for testing and bin visualization only */
 static chunk_t *find(bin_t *bin, chunk_t *chunk);
+static chunk_t *find_by_pointer(bin_t *bin, void *pointer);
 static void print(bin_t *bin);
 
-
- const char *BIN_SIZE_LABELS[18] = {"4", "8", "16", "32", "128", "256", "512",
+const char *BIN_SIZE_LABELS[18] = {
+                                    "4", "8", "16", "32", "128", "256", "512",
                                     "513 - 1024", "1025 - 2048" , "2049 - 4096" ,
                                     "4097 - 8192" , "8193 - 16384" , "16385 - 32768",
-                                    "32769 - 65536" , "65537 - 131072" ,
-                                    "131073 - 262144" , "262145 - 409600", "MAX"
-                                     };
+                                    "32769 - 65536" , "65537 - 131072" , "131073 - 262144" ,
+                                    "262145 - 409600", "MAX"
+                                  };
   
-
 void initialize_bin(bin_t *bin)
 {
-   bin->get_index        = get_index;
-   bin->add              = add;
-   bin->find             = find;
-   bin->print            = print;
+   bin->get_index           = get_index;
+   bin->add                 = add;
+   bin->find                = find;
+   bin->find_by_pointer     = find_by_pointer;
+   bin->print               = print;
+   bin->remove_from_head    = remove_from_head;
 }
+
 
 static chunk_t *add(bin_t *bin, chunk_t *chunk)
 {
-  u_int8_t index         = get_index(chunk->size);
-  chunk_t *current       = bin->table[index] ;
-  chunk_t *next          = NULL;
+  u_int8_t index           = get_index(chunk->size);
+  chunk_t *current         = bin->table[index] ;
+  chunk_t *next            = NULL;
 
   if(!current)
     {
        bin->table[index] = chunk;
+       chunk->next       = NULL;
        return bin->table[index];
     }
 
@@ -84,6 +90,26 @@ static chunk_t *find(bin_t *bin, chunk_t *chunk)
   return NULL;
 }
 
+
+static chunk_t *find_by_pointer(bin_t *bin, void *pointer)
+{
+  for(int i = 0; i < BIN_SIZE; i++)
+  {
+    chunk_t *current = bin->table[i];
+
+    while(current)
+      {
+
+      if(current->pointer == pointer)
+        return current;
+
+      current = current->next;
+      }
+  }
+  return NULL;
+}
+
+
 static void print(bin_t *bin)
 {
   for(int i = 0; i < BIN_SIZE; i++)
@@ -101,6 +127,16 @@ static void print(bin_t *bin)
       }
       printf(" \n");
   }
+}
+
+static void remove_from_head(bin_t *bin,  chunk_t *chunk)
+{
+   u_int8_t index           = get_index(chunk->size);
+
+  bin->table[index]        =  bin->table[index]->next;
+
+   if(bin->table[index])
+      bin->table[index]->prev  = NULL;
 }
 
 static u_int8_t get_index(size_t size)

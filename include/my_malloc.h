@@ -12,11 +12,14 @@ void dealloc(void);
 void dump(chunk_t *array_to_dump[]);
 page_t *get_heap_pages(void);
 size_t get_heap_os_page_size();
-void list_heap_pages(void);
+void print_heap_pages(void);
+
 u_int8_t get_bin_index(size_t size);
 chunk_t *add_to_bin(chunk_t *chunk);
+chunk_t **get_heap_bin(void);
 
-chunk_t *find_freed(chunk_t *chunk);
+chunk_t *find_freed_chunk(chunk_t *chunk);
+chunk_t *find_freed_pointer(void *pointer);
 void print_freed(void);
 
 chunk_t *find_alloc(void *pointer);

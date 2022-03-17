@@ -26,7 +26,5 @@ typedef struct chunk {
 
 void initialize_chunk(chunk_t *chunk, void *pointer, size_t size);
 void add_chunk_to_page(chunk_t *chunk, page_t *page);
-void remove_page_chunks_from_bin(page_t *page);
-
 
 #endif

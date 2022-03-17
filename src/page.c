@@ -52,7 +52,7 @@ page_t *add_page(page_t *root_page, page_t *page)
   return root_page;
 }
 
-void list_pages(page_t *root_page)
+void print_pages(page_t *root_page)
 {
   page_t *temp = root_page;
 
@@ -64,8 +64,11 @@ void list_pages(page_t *root_page)
 
 }
 
-void remove_page(page_t *root, page_t *page_to_remove)
+page_t *remove_page(page_t *root, page_t *page_to_remove)
 {
+  if(page_to_remove == root)
+     return root->next;
+
   page_t *temp = root;
     
   while(temp)
@@ -79,6 +82,7 @@ void remove_page(page_t *root, page_t *page_to_remove)
     temp = temp->next;
   }
 
+  return root;
 }
 
 

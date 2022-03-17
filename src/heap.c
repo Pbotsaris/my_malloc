@@ -12,6 +12,7 @@ static void dump(heap_t *heap, chunk_t *array_to_dump[]);
 /* helpers */
 void collect(heap_t *heap);
 static page_t *select_heap_page(heap_t *heap, size_t size);
+static void remove_page_chunks_from_bin(heap_t *heap, page_t *page);
 
 void initialize_heap(heap_t *heap, size_t size)
 {
@@ -103,13 +104,31 @@ void collect(heap_t *heap)
     {
       if(page->alloced_count == 0)
       {
-        remove_page_chunks_from_bin(page);
-        remove_page(heap->pages, page);
+        remove_page_chunks_from_bin(heap, page);
+        heap->pages = remove_page(heap->pages, page);
         munmap(page->buffer, page->capacity);
       }
 
    page = page->next;
    }
+}
+
+
+static void remove_page_chunks_from_bin(heap_t *heap, page_t *page)
+
+{
+  chunk_t *chunk = page->chunks;
+
+  while(chunk)
+  {
+    if(chunk->prev)
+      chunk->prev->next = chunk->next;
+    else
+      heap->bin.remove_from_head(&heap->bin, chunk);
+    
+    chunk = chunk->next_in_page;
+  }
+
 }
 
 static page_t *select_heap_page(heap_t *heap, size_t size)

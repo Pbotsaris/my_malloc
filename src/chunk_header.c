@@ -34,17 +34,4 @@ void add_chunk_to_page(chunk_t *chunk, page_t *page)
     }
 }
 
-void remove_page_chunks_from_bin(page_t *page)
-{
-  chunk_t *chunk = page->chunks;
-
-  while(chunk)
-  {
-
-    if(chunk->prev)
-      chunk->prev->next = chunk->next;
-    
-    chunk = chunk->next_in_page;
-  }
-}
 

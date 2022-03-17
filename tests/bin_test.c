@@ -51,7 +51,6 @@ Test(asserts, get_correct_bin_index_fixed_sizes)
 }
 
 
-
 Test(asserts, bin_doubly_linked_list_is_sorted)
 {
 
@@ -69,7 +68,7 @@ Test(asserts, bin_doubly_linked_list_is_sorted)
    add_to_bin(chunk);
 
     if(size == 1026)
-      head = find_freed(chunk);
+      head = find_freed_chunk(chunk);
 
   size++;
   }
@@ -117,7 +116,7 @@ Test(asserts, add_fixed_sized_chunks_to_bin)
 
    chunk_t *chunk = move_from_alloced_chunks(pointer);
    add_to_bin(chunk);
-   chunk_t *ret = find_freed(chunk);
+   chunk_t *ret = find_freed_chunk(chunk);
 
   cr_assert(ret == chunk, "Freed chunk does not match. result -> %p | should be: %p", (void*)ret, (void*)chunk);
 
@@ -139,7 +138,7 @@ Test(asserts, add_ranged_sized_chunks_to_bin)
 
    chunk_t *chunk = move_from_alloced_chunks(pointer);
    add_to_bin(chunk);
-   chunk_t *ret = find_freed(chunk);
+   chunk_t *ret = find_freed_chunk(chunk);
 
   cr_assert(ret == chunk, "Freed chunk does not match. result -> %p | should be: %p", (void*)ret, (void*)chunk);
 
@@ -163,7 +162,7 @@ chunk_t *head;
    add_to_bin(chunk);
 
     if(i == 0)
-      head = find_freed(chunk);
+      head = find_freed_chunk(chunk);
 
    i++;
   }

@@ -49,14 +49,19 @@ size_t get_heap_os_page_size()
   return heap.os_page_size;
 }
 
-void list_heap_pages(void)
+void print_heap_pages(void)
 {
-  list_pages(heap.pages);
+  print_pages(heap.pages);
 }
 
 u_int8_t get_bin_index(size_t size)
 {
   return heap.bin.get_index(size);
+}
+
+chunk_t **get_heap_bin(void)
+{
+  return heap.bin.table;
 }
 
 chunk_t *find_alloc(void *pointer)
@@ -69,11 +74,15 @@ chunk_t *add_to_bin(chunk_t *chunk)
   return heap.bin.add(&heap.bin, chunk);
 }
 
-chunk_t *find_freed(chunk_t *chunk)
+chunk_t *find_freed_chunk(chunk_t *chunk)
 {
  return heap.bin.find(&heap.bin, chunk);
 }
 
+chunk_t *find_freed_pointer(void *pointer)
+{
+return heap.bin.find_by_pointer(&heap.bin, pointer);
+}
 void print_freed(void)
 {
   heap.bin.print(&heap.bin);

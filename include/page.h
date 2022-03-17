@@ -33,7 +33,7 @@ typedef struct page {
 page_t *create_page(void *next_allocation, size_t alloc_size, size_t os_page_size);
 page_t *find_page(page_t *page, size_t size);
 page_t *add_page(page_t *root_page, page_t *page);
-void list_pages(page_t *root_page);
-void remove_page(page_t *root, page_t *page_to_remove);
+void print_pages(page_t *root_page);
+page_t *remove_page(page_t *root, page_t *page_to_remove);
 
 #endif
