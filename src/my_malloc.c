@@ -76,18 +76,18 @@ chunk_t *add_to_bin(chunk_t *chunk)
 
 chunk_t *find_freed_chunk(chunk_t *chunk)
 {
- return heap.bin.find(&heap.bin, chunk);
+ return heap.bin.find_by_chunk(&heap.bin, chunk);
 }
 
 chunk_t *find_freed_pointer(void *pointer)
 {
 return heap.bin.find_by_pointer(&heap.bin, pointer);
 }
+
 void print_freed(void)
 {
   heap.bin.print(&heap.bin);
 }
-
 
 chunk_t *move_from_alloced_chunks(void *pointer)
 {

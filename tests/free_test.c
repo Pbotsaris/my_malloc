@@ -67,7 +67,7 @@
   pages = get_heap_pages();
 
 
- cr_assert(pages && !pages->next,  "Number of pages after deallocation does not match.");
+  cr_assert(pages && !pages->next,  "Number of pages after deallocation does not match.");
 
  dealloc();
 
@@ -129,8 +129,6 @@
   chunk_t *chunk2 = find_freed_pointer(page1_chunk2);
 
   cr_assert(chunk1 && chunk2 ,  "Chunks not in the bin after free");
-
-  /* next free will collect page 1 */
 
   my_free(page2_chunk2);
 

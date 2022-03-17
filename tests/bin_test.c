@@ -60,9 +60,7 @@ Test(asserts, bin_doubly_linked_list_is_sorted)
 
   while(size < 1035)
   {
-
    void *pointer  = my_malloc(size);
-
    chunk_t *chunk = move_from_alloced_chunks(pointer);
     
    add_to_bin(chunk);
@@ -75,14 +73,12 @@ Test(asserts, bin_doubly_linked_list_is_sorted)
 
   while(head)
   {
-
       if(prev)
          cr_assert(prev->size < head->size, "List is not sorted correctly.  %d  <-- prev | current --> %d", prev->size, head->size);
       
       prev = head;
       head = head->next;
   }
-
 }
 
 
@@ -122,7 +118,6 @@ Test(asserts, add_fixed_sized_chunks_to_bin)
 
    i++;
   }
-
 
   dealloc();
 }

@@ -10,8 +10,12 @@ static void print_dump(heap_t *heap);
 static void dump(heap_t *heap, chunk_t *array_to_dump[]);
 
 /* helpers */
-void collect(heap_t *heap);
-static page_t *select_heap_page(heap_t *heap, size_t size);
+static void collect(heap_t *heap);
+static void *alloc_from_bin(heap_t *heap, size_t size);
+static void *alloc_from_page(heap_t *heap, page_t *page, size_t size);
+static size_t verify_size(heap_t *heap, size_t size);
+
+static page_t *select_heap_page(heap_t *heap, page_t *page, size_t size);
 static void remove_page_chunks_from_bin(heap_t *heap, page_t *page);
 
 void initialize_heap(heap_t *heap, size_t size)
@@ -40,7 +44,33 @@ static void *alloc(heap_t *heap, size_t size)
    if(size == 0)
      return NULL;
 
-  page_t *page = select_heap_page(heap, size);
+  page_t *page             = find_page(heap->pages, (size + sizeof(chunk_t)));
+  void *pointer            = NULL;
+  size                     = verify_size(heap, size);
+
+   if(!page)
+      pointer = alloc_from_bin(heap, size);
+
+    if(!pointer)
+      pointer = alloc_from_page(heap, page, size);
+
+   return pointer;
+  }
+
+static void hfree(heap_t *heap, void *pointer)
+{
+  chunk_t *freed_chunk                = map_move(&heap->alloced_chunks, pointer);
+  heap->bin.add(&heap->bin, freed_chunk);
+
+  collect(heap);
+  freed_chunk->page->alloced_count   -= 1;
+}
+
+
+static void *alloc_from_page(heap_t *heap, page_t *page, size_t size)
+{
+
+  page = select_heap_page(heap, page, size);
    
   chunk_t *chunk                       =  (chunk_t*)((int8_t*)page->buffer + page->size);
   void *pointer                        =  ((int8_t*)page->buffer) + (sizeof(chunk_t) + page->size);
@@ -49,25 +79,20 @@ static void *alloc(heap_t *heap, size_t size)
   chunk->page                          = page;
  
   initialize_chunk(chunk, pointer, size);
-
   map_insert(&heap->alloced_chunks, chunk);
-
   add_chunk_to_page(chunk, page);
 
   return pointer;
 }
 
-static void hfree(heap_t *heap, void *pointer)
+
+static void *alloc_from_bin(heap_t *heap, size_t size)
 {
-  chunk_t *freed_chunk                = map_move(&heap->alloced_chunks, pointer);
-
-  assert(freed_chunk && "Pointer does not exist\n");
-
-  heap->bin.add(&heap->bin, freed_chunk);
-
-  collect(heap);
-  freed_chunk->page->alloced_count   -= 1;
+  (void)heap;
+  (void)size;
+  return NULL;
 }
+
 
 
 static void print_dump(heap_t *heap)
@@ -96,7 +121,7 @@ static void dealloc(heap_t *heap)
 
 /* HEPERS */
 
-void collect(heap_t *heap)
+static void collect(heap_t *heap)
 {
   page_t *page = heap->pages;
 
@@ -111,6 +136,19 @@ void collect(heap_t *heap)
 
    page = page->next;
    }
+}
+
+
+static size_t verify_size(heap_t *heap, size_t size)
+{
+  if(size > FIXED_SIZE)
+     return size;
+
+ int fixed_sizes[] = {4, 8, 16, 32, 64, 128, 256, 512};
+
+  u_int8_t index = heap->bin.get_index(size);
+
+  return fixed_sizes[index];
 }
 
 
@@ -131,10 +169,8 @@ static void remove_page_chunks_from_bin(heap_t *heap, page_t *page)
 
 }
 
-static page_t *select_heap_page(heap_t *heap, size_t size)
+static page_t *select_heap_page(heap_t *heap, page_t *page, size_t size)
 {
-  page_t *page = find_page(heap->pages, (size + sizeof(chunk_t)));
-
   /* allocated new page if no suitable is avail */
   if(!page)
   {

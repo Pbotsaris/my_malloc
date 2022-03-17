@@ -46,21 +46,20 @@ bool contains(chunk_t *pointer_array[], void *pointer)
  Test(asserts, allocation_has_correct_size)
  {
  
-   u_int32_t size = 10;
-   u_int32_t size_two = 20;
-   u_int32_t size_three = 30;
- 
-   void *pointer = my_malloc(size);
-   void *pointer_two = my_malloc(size_two);
-   void *pointer_three = my_malloc(size_three);
+   void *pointer = my_malloc(3); // fixed size will become 4
+   void *pointer_two = my_malloc(20); // fixed size will become 32
+   void *pointer_three = my_malloc(140); // fixed size will become 256
+   void *pointer_four = my_malloc(899); // ranged size so remain same size value
  
    chunk_t *chunk = find_alloc(pointer);
    chunk_t *chunk_two = find_alloc(pointer_two);
    chunk_t *chunk_three = find_alloc(pointer_three);
+   chunk_t *chunk_four = find_alloc(pointer_four);
  
-   cr_assert(chunk->size == size, "Pointer one: Allocation size is incorrect\n");
-   cr_assert(chunk_two->size == size_two, "Pointer two: Allocation size is incorrect\n");
-   cr_assert(chunk_three->size == size_three, "Pointer three: Allocation size is incorrect\n");
+   cr_assert(chunk->size == 4, "Pointer one: Allocation size is incorrect\n");
+   cr_assert(chunk_two->size ==  32, "Pointer two: Allocation size is incorrect\n");
+   cr_assert(chunk_three->size == 256, "Pointer three: Allocation size is incorrect\n");
+   cr_assert(chunk_four->size == 899, "Pointer three: Allocation size is incorrect\n");
  
    dealloc();
  }

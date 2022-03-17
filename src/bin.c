@@ -3,9 +3,10 @@
 static u_int8_t get_index(size_t size);
 static chunk_t *add(bin_t *bin, chunk_t *chunk);
 static void remove_from_head(bin_t *bin,  chunk_t *chunk);
+static chunk_t *find(bin_t *bin, size_t size);
 
 /* used for testing and bin visualization only */
-static chunk_t *find(bin_t *bin, chunk_t *chunk);
+static chunk_t *find_by_chunk(bin_t *bin, chunk_t *chunk);
 static chunk_t *find_by_pointer(bin_t *bin, void *pointer);
 static void print(bin_t *bin);
 
@@ -22,6 +23,7 @@ void initialize_bin(bin_t *bin)
    bin->get_index           = get_index;
    bin->add                 = add;
    bin->find                = find;
+   bin->find_by_chunk       = find_by_chunk;
    bin->find_by_pointer     = find_by_pointer;
    bin->print               = print;
    bin->remove_from_head    = remove_from_head;
@@ -50,7 +52,7 @@ static chunk_t *add(bin_t *bin, chunk_t *chunk)
         chunk->prev    = current;
         chunk->next    = NULL;
         break;
-    }
+      }
      /* inserting to list sorted by size */
     if(chunk->size >= current->size && chunk->size <= current->next->size)
     {
@@ -69,10 +71,36 @@ static chunk_t *add(bin_t *bin, chunk_t *chunk)
   return bin->table[index];
 }
 
+static chunk_t *find(bin_t *bin, size_t size)
+{
+  u_int8_t index           = get_index(size);
+  chunk_t *current         = bin->table[index] ;
+
+  if(size <= FIXED_SIZE)
+     return current;
+
+  while(current)
+  {
+
+    if(current->size <= size)
+      {
+        if(!current->next || current->size > size)
+            return current;
+      }
+
+   current = current->next;
+   }
+
+  return NULL;
+}
+
+
+
 /* this function scans for the whole bin for a pointer 
 *  it is used for testing only and does not affect performance
 */
-static chunk_t *find(bin_t *bin, chunk_t *chunk)
+
+static chunk_t *find_by_chunk(bin_t *bin, chunk_t *chunk)
 {
   for(int i = 0; i < BIN_SIZE; i++)
   {
@@ -132,8 +160,8 @@ static void print(bin_t *bin)
 static void remove_from_head(bin_t *bin,  chunk_t *chunk)
 {
    u_int8_t index           = get_index(chunk->size);
-
-  bin->table[index]        =  bin->table[index]->next;
+   
+  bin->table[index]        = bin->table[index]  ?  bin->table[index]->next : NULL;
 
    if(bin->table[index])
       bin->table[index]->prev  = NULL;
