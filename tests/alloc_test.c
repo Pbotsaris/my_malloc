@@ -22,7 +22,8 @@ bool contains(chunk_t *pointer_array[], void *pointer)
    cr_assert(pointer != NULL, "Allocation does not return a pointer\n");
    dealloc();
  }
- 
+
+
  
  Test(asserts, multiple_allocations)
  {
@@ -153,6 +154,25 @@ bool contains(chunk_t *pointer_array[], void *pointer)
     dealloc();
 
 }
+
+ Test(asserts, page_allocation_count_increments_and_decrements)
+ {
+   void *pointer = my_malloc(8);
+   page_t *pages = get_heap_pages(); 
+
+   cr_assert(pages->alloced_count == 1, "alloced count does not match. Was -> %d  | should be -> 1", pages->alloced_count);
+
+    my_malloc(8);
+
+   cr_assert(pages->alloced_count == 2, "alloced count does not match. Was -> %d  | should be -> 2", pages->alloced_count);
+
+    my_free(pointer);
+
+   cr_assert(pages->alloced_count == 1, "alloced count does not match. Was -> %d  | should be -> 1", pages->alloced_count);
+
+    dealloc();
+ }
+
   
   Test(asserts, move_pointer_from_allocated_chunks)
   {

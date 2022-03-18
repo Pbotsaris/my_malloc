@@ -117,7 +117,7 @@ chunk_t *map_move(map_t *map, void *pointer)
     prev = chunk;
     chunk = chunk->next;
   }
- //  map->chunks[slot] = NULL;
+
  return NULL;
 }
 

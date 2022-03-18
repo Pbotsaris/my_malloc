@@ -88,9 +88,14 @@ static void *alloc_from_page(heap_t *heap, page_t *page, size_t size)
 
 static void *alloc_from_bin(heap_t *heap, size_t size)
 {
-  (void)heap;
-  (void)size;
-  return NULL;
+   chunk_t *chunk = heap->bin.move(&heap->bin, size);
+  
+   if(!chunk)
+     return NULL;
+
+   map_insert(&heap->alloced_chunks, chunk);
+
+   return chunk->pointer;
 }
 
 
@@ -166,7 +171,6 @@ static void remove_page_chunks_from_bin(heap_t *heap, page_t *page)
     
     chunk = chunk->next_in_page;
   }
-
 }
 
 static page_t *select_heap_page(heap_t *heap, page_t *page, size_t size)

@@ -139,3 +139,7 @@
   cr_assert(page2_chunk && !chunk2 && !chunk1 ,  "chunks were not removed from bin after collection");
 }
 
+
+
+
+

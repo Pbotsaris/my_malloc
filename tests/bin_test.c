@@ -50,7 +50,6 @@ Test(asserts, get_correct_bin_index_fixed_sizes)
   dealloc();
 }
 
-
 Test(asserts, bin_doubly_linked_list_is_sorted)
 {
 
@@ -80,7 +79,6 @@ Test(asserts, bin_doubly_linked_list_is_sorted)
       head = head->next;
   }
 }
-
 
 Test(asserts, get_correct_bin_index_ranged_sizes)
 {
@@ -131,11 +129,14 @@ Test(asserts, add_ranged_sized_chunks_to_bin)
 
    void *pointer  =  my_malloc(ranged_sizes[i]);
 
-   chunk_t *chunk = move_from_alloced_chunks(pointer);
-   add_to_bin(chunk);
-   chunk_t *ret = find_freed_chunk(chunk);
+  chunk_t *chunk = move_from_alloced_chunks(pointer);
 
-  cr_assert(ret == chunk, "Freed chunk does not match. result -> %p | should be: %p", (void*)ret, (void*)chunk);
+   //       printf("\nfointer -> %d\n", chunk->size);
+ 
+        add_to_bin(chunk);
+        chunk_t *ret = find_freed_chunk(chunk);
+
+    cr_assert(ret == chunk, "Freed chunk does not match. result -> %p | should be: %p", (void*)ret, (void*)chunk);
 
    i++;
   }
@@ -146,6 +147,7 @@ Test(asserts, add_ranged_sized_chunks_to_bin)
 
 Test(asserts, bin_doubly_linked_list_is_correct)
 {
+  
 int i = 0;
 chunk_t *head;
   while(i < 5)
@@ -153,8 +155,11 @@ chunk_t *head;
    void *pointer  = my_malloc(8);
 
    chunk_t *chunk = move_from_alloced_chunks(pointer);
+
     
    add_to_bin(chunk);
+
+
 
     if(i == 0)
       head = find_freed_chunk(chunk);
