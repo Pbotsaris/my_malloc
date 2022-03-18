@@ -1,5 +1,5 @@
 #include <criterion/criterion.h>
-#include "../include/my_malloc.h"
+#include "../include/malloc_test_api.h"
 
  size_t fixed_sizes[9] = {4, 8, 16, 32, 64, 128, 256, 512, 0 };
 
@@ -33,8 +33,8 @@
 Test(asserts, get_correct_bin_index_fixed_sizes)
 {
 
-  // need to call malloc to initialize the heap.
-  my_malloc(10);
+  // need to call malloc to initialize malloc_test
+  malloc_test(10);
 
 
   int i = 0;
@@ -59,7 +59,7 @@ Test(asserts, bin_doubly_linked_list_is_sorted)
 
   while(size < 1035)
   {
-   void *pointer  = my_malloc(size);
+   void *pointer  = malloc_test(size);
    chunk_t *chunk = move_from_alloced_chunks(pointer);
     
    add_to_bin(chunk);
@@ -83,7 +83,7 @@ Test(asserts, bin_doubly_linked_list_is_sorted)
 Test(asserts, get_correct_bin_index_ranged_sizes)
 {
 
-  my_malloc(10);
+  malloc_test(10);
 
   int i = 0;
   while(ranged_sizes[i] != 0)
@@ -106,7 +106,7 @@ Test(asserts, add_fixed_sized_chunks_to_bin)
   while(fixed_sizes[i] != 0)
   {
 
-   void *pointer  = my_malloc(fixed_sizes[i]);
+   void *pointer  = malloc_test(fixed_sizes[i]);
 
    chunk_t *chunk = move_from_alloced_chunks(pointer);
    add_to_bin(chunk);
@@ -127,7 +127,7 @@ Test(asserts, add_ranged_sized_chunks_to_bin)
   while(ranged_sizes[i] != 0)
   {
 
-   void *pointer  =  my_malloc(ranged_sizes[i]);
+   void *pointer  =  malloc_test(ranged_sizes[i]);
 
   chunk_t *chunk = move_from_alloced_chunks(pointer);
 
@@ -152,7 +152,7 @@ int i = 0;
 chunk_t *head;
   while(i < 5)
   {
-   void *pointer  = my_malloc(8);
+   void *pointer  = malloc_test(8);
 
    chunk_t *chunk = move_from_alloced_chunks(pointer);
 

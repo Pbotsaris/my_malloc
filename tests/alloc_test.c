@@ -1,5 +1,5 @@
 #include <criterion/criterion.h>
-#include "../include/my_malloc.h"
+#include "../include/malloc_test_api.h"
 
 
 bool contains(chunk_t *pointer_array[], void *pointer)
@@ -17,7 +17,7 @@ bool contains(chunk_t *pointer_array[], void *pointer)
 
  Test(asserts, allocation_returns_pointer)
  {
-   void *pointer = my_malloc(30);
+   void *pointer = malloc_test(30);
  
    cr_assert(pointer != NULL, "Allocation does not return a pointer\n");
    dealloc();
@@ -28,12 +28,12 @@ bool contains(chunk_t *pointer_array[], void *pointer)
  Test(asserts, multiple_allocations)
  {
    chunk_t *array_to_dump[CHUNKS_CAPACITY + 1];
-   void *pointer = my_malloc(30);
-   void *pointer_two = my_malloc(10);
-   void *pointer_three = my_malloc(70);
-   void *pointer_four = my_malloc(50);
+   void *pointer = malloc_test(30);
+   void *pointer_two = malloc_test(10);
+   void *pointer_three = malloc_test(70);
+   void *pointer_four = malloc_test(50);
  
-   dump(array_to_dump);
+   dump_alloced_chunks(array_to_dump);
  
    cr_assert(contains(array_to_dump, pointer), "First pointer does not match\n");
    cr_assert(contains(array_to_dump, pointer_two), "second pointer does not match\n");
@@ -47,10 +47,10 @@ bool contains(chunk_t *pointer_array[], void *pointer)
  Test(asserts, allocation_has_correct_size)
  {
  
-   void *pointer = my_malloc(3); // fixed size will become 4
-   void *pointer_two = my_malloc(20); // fixed size will become 32
-   void *pointer_three = my_malloc(140); // fixed size will become 256
-   void *pointer_four = my_malloc(899); // ranged size so remain same size value
+   void *pointer = malloc_test(3); // fixed size will become 4
+   void *pointer_two = malloc_test(20); // fixed size will become 32
+   void *pointer_three = malloc_test(140); // fixed size will become 256
+   void *pointer_four = malloc_test(899); // ranged size so remain same size value
  
    chunk_t *chunk = find_alloc(pointer);
    chunk_t *chunk_two = find_alloc(pointer_two);
@@ -70,9 +70,9 @@ bool contains(chunk_t *pointer_array[], void *pointer)
    /* they should live in different pages */
    size_t size_small = 40, size_medium = 5000, size_large = 50000;
  
-   void *small = my_malloc(size_small);
-   void *medium = my_malloc(size_medium);
-   void *large = my_malloc(size_large);
+   void *small = malloc_test(size_small);
+   void *medium = malloc_test(size_medium);
+   void *large = malloc_test(size_large);
  
    size_t os_page_size = get_heap_os_page_size();
    page_t *pages = get_heap_pages();
@@ -115,10 +115,10 @@ bool contains(chunk_t *pointer_array[], void *pointer)
    * 4096 (page size) - 40 (page header) = 4060
    * 4056 / 4 (four allocations) = 1014
    */
-  my_malloc(966); // 966 + 48 = 1014
-  my_malloc(966); 
-  my_malloc(966);
-  my_malloc(966);
+  malloc_test(966); // 966 + 48 = 1014
+  malloc_test(966); 
+  malloc_test(966);
+  malloc_test(966);
 
   page_t *pages = get_heap_pages();
 
@@ -126,8 +126,8 @@ bool contains(chunk_t *pointer_array[], void *pointer)
 
   // PAGE 02
 
-  my_malloc(840); 
-  my_malloc(855);
+  malloc_test(840); 
+  malloc_test(855);
 
   cr_assert(pages && pages->next && !pages->next->next , "collect test did not allocate right number of pages");
 
@@ -138,9 +138,9 @@ bool contains(chunk_t *pointer_array[], void *pointer)
 
   Test(asserts, pages_holds_a_reference_to_its_allocated_chunk)
 {
-  void *pointer = my_malloc(8);
-  void *pointer_two = my_malloc(8);
-  void *pointer_three = my_malloc(8);
+  void *pointer = malloc_test(8);
+  void *pointer_two = malloc_test(8);
+  void *pointer_three = malloc_test(8);
 
   page_t *pages = get_heap_pages();
   chunk_t *page_chunks = pages->chunks;
@@ -157,16 +157,16 @@ bool contains(chunk_t *pointer_array[], void *pointer)
 
  Test(asserts, page_allocation_count_increments_and_decrements)
  {
-   void *pointer = my_malloc(8);
+   void *pointer = malloc_test(8);
    page_t *pages = get_heap_pages(); 
 
    cr_assert(pages->alloced_count == 1, "alloced count does not match. Was -> %d  | should be -> 1", pages->alloced_count);
 
-    my_malloc(8);
+    malloc_test(8);
 
    cr_assert(pages->alloced_count == 2, "alloced count does not match. Was -> %d  | should be -> 2", pages->alloced_count);
 
-    my_free(pointer);
+    free_test(pointer);
 
    cr_assert(pages->alloced_count == 1, "alloced count does not match. Was -> %d  | should be -> 1", pages->alloced_count);
 
@@ -176,9 +176,9 @@ bool contains(chunk_t *pointer_array[], void *pointer)
   
   Test(asserts, move_pointer_from_allocated_chunks)
   {
-    void *pointer = my_malloc(10);
-    my_malloc(10);
-    my_malloc(10);
+    void *pointer = malloc_test(10);
+    malloc_test(10);
+    malloc_test(10);
   
     chunk_t *moved_chunk = move_from_alloced_chunks(pointer);
   

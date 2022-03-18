@@ -18,25 +18,6 @@
 int main(void)
 {
 
-  int i = 0;
-  while(ranged_sizes[i] != 0)
-  {
-
-   void *pointer  =  my_malloc(ranged_sizes[i]);
-
-  chunk_t *chunk = move_from_alloced_chunks(pointer);
-
-   //       printf("\nfointer -> %d\n", chunk->size);
- 
-        add_to_bin(chunk);
-        chunk_t *ret = find_freed_chunk(chunk);
-
-   i++;
-  }
-
-
-   dealloc();
-
   return 0;
 }
 

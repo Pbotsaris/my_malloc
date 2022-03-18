@@ -25,8 +25,6 @@ typedef struct heap
   void         (*create_page)(struct heap*, page_t, size_t);
   void         *(*alloc)(struct heap*, size_t);
   void         (*free)(struct heap*, void*);
-  void         (*print_dump) (struct heap*);
-  void         (*dump) (struct heap*, chunk_t*[]);
   void         (*dealloc)(struct heap*);
  }heap_t;
 

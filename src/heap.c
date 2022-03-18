@@ -3,11 +3,7 @@
 /* API */
 static void *alloc(heap_t *heap, size_t size);
 static void hfree(heap_t *heap, void *pointer);
-
-/* TEST API */
 static void dealloc(heap_t *heap);
-static void print_dump(heap_t *heap);
-static void dump(heap_t *heap, chunk_t *array_to_dump[]);
 
 /* helpers */
 static void collect(heap_t *heap);
@@ -20,13 +16,11 @@ static void remove_page_chunks_from_bin(heap_t *heap, page_t *page);
 
 void initialize_heap(heap_t *heap, size_t size)
 {
-  heap->alloc               = alloc;
-  heap->dealloc             = dealloc; 
-  heap->dump                = dump;
-  heap->free                = hfree;
-  heap->print_dump          = print_dump;
-  heap->os_page_size        = sysconf(_SC_PAGESIZE);   
-  heap->next_allocation     = 0x00;                   
+  heap->alloc                  = alloc;
+  heap->dealloc                = dealloc; 
+  heap->free                   = hfree;
+  heap->os_page_size           = sysconf(_SC_PAGESIZE);   
+  heap->next_allocation        = 0x00;                   
 
   /* create first page */
   heap->pages = create_page(heap->next_allocation, size, heap->os_page_size);
@@ -85,7 +79,6 @@ static void *alloc_from_page(heap_t *heap, page_t *page, size_t size)
   return pointer;
 }
 
-
 static void *alloc_from_bin(heap_t *heap, size_t size)
 {
    chunk_t *chunk = heap->bin.move(&heap->bin, size);
@@ -97,20 +90,6 @@ static void *alloc_from_bin(heap_t *heap, size_t size)
 
    return chunk->pointer;
 }
-
-
-
-static void print_dump(heap_t *heap)
-{
-    printf("Alloced chunks:\n");
-    map_print(&heap->alloced_chunks);
-}
-
-static void dump(heap_t *heap, chunk_t *array_to_dump[])
-{
-  map_dump(&heap->alloced_chunks, array_to_dump);
-}
-
 
 static void dealloc(heap_t *heap)
 {
