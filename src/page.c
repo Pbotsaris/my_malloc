@@ -17,7 +17,6 @@ page_t *create_page(void *next_allocation, size_t alloc_size, size_t os_page_siz
   return initialize_page(buffer, return_size);
 }
 
-
 page_t *find_page(page_t *page, size_t size)
 {
   page_t *temp = page;
