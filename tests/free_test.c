@@ -41,3 +41,12 @@ Test(asserts, free_uses_bin_when_chunk_is_avail)
     }
 
 }
+
+Test(asserts, double_free_null)
+{
+   int i = 10;
+   void *pointer = my_malloc(10);
+   my_free(pointer);
+   my_free(&i);
+   
+}

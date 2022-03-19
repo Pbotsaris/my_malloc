@@ -15,6 +15,7 @@ static size_t verify_size(heap_t *heap, size_t size);
 static page_t *select_heap_page(heap_t *heap, page_t *page, size_t size);
 static void remove_page_chunks_from_bin(heap_t *heap, page_t *page);
 static bool has_same_size(chunk_t *chunk, size_t size);
+static bool is_invalid_free(chunk_t *chunk);
 
 void initialize_heap(heap_t *heap, size_t size)
 {
@@ -70,6 +71,9 @@ static void *ralloc(heap_t *heap, void *pointer, size_t size)
 static void hfree(heap_t *heap, void *pointer)
 {
   chunk_t *freed_chunk                = map_move(&heap->alloced_chunks, pointer);
+
+  if(is_invalid_free(freed_chunk)) return;
+
   heap->bin.add(&heap->bin, freed_chunk);
 
   collect(heap);
@@ -173,6 +177,14 @@ static page_t *select_heap_page(heap_t *heap, page_t *page, size_t size)
   }
 
   return page;
+}
+
+static bool is_invalid_free(chunk_t *chunk)
+{
+  if(!chunk)
+     fprintf(stderr, "Error: attemping to free invalid pointer\n");
+
+    return chunk == NULL;
 }
 
 static bool has_same_size(chunk_t *chunk, size_t size) { return size  == (u_int32_t)chunk->size; }
