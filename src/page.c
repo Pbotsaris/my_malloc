@@ -25,7 +25,6 @@ page_t *find_page(page_t *page, size_t size)
   while(temp)
   {
       /* if page has correct size also checks if there is any capacity left */
-
      if(size <= temp->capacity && has_capacity(temp, size))
         break;
 
@@ -52,18 +51,6 @@ page_t *add_page(page_t *root_page, page_t *page)
   return root_page;
 }
 
-void print_pages(page_t *root_page)
-{
-  page_t *temp = root_page;
-
-  while(temp)
-  {
-      printf("page addr: %p, page->capacity: %d, page->size: %d\n", (void*)temp, temp->capacity, temp->size);
-      temp = temp->next;
-  }
-
-}
-
 page_t *remove_page(page_t *root, page_t *page_to_remove)
 {
   if(page_to_remove == root)
@@ -85,6 +72,17 @@ page_t *remove_page(page_t *root, page_t *page_to_remove)
   return root;
 }
 
+void print_pages(page_t *root_page)
+{
+  page_t *temp = root_page;
+
+  while(temp)
+  {
+      printf("page addr: %p, page->capacity: %d, page->size: %d\n", (void*)temp, temp->capacity, temp->size);
+      temp = temp->next;
+  }
+
+}
 
 /* PRIVATE  */
 

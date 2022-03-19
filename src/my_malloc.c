@@ -22,7 +22,4 @@ void my_free(void *pointer)
   heap.free(&heap, pointer);
 }
 
-/* functions bellow are used for testing only */
-
-
 

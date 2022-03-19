@@ -22,14 +22,10 @@ void initialize_heap(heap_t *heap, size_t size)
   heap->os_page_size           = sysconf(_SC_PAGESIZE);   
   heap->next_allocation        = 0x00;                   
 
-  /* create first page */
   heap->pages = create_page(heap->next_allocation, size, heap->os_page_size);
   heap->next_allocation = (void*)((int8_t*)heap->pages->buffer + (heap->pages->capacity + 1));
   
-  /* init hash table for alloced chunks */
   initialize_map(&heap->alloced_chunks);
-
-  /* init bin for freed chunks */
   initialize_bin(&heap->bin);
 }
 
@@ -43,10 +39,10 @@ static void *alloc(heap_t *heap, size_t size)
   size                     = verify_size(heap, size);
 
    if(!page)
-      pointer = alloc_from_bin(heap, size);
+      pointer             = alloc_from_bin(heap, size);
 
     if(!pointer)
-      pointer = alloc_from_page(heap, page, size);
+      pointer             = alloc_from_page(heap, page, size);
 
    return pointer;
   }
@@ -93,7 +89,6 @@ static void *alloc_from_bin(heap_t *heap, size_t size)
 
 static void dealloc(heap_t *heap)
 {
-
   page_t *page = heap->pages;
 
   while(page)
@@ -103,7 +98,7 @@ static void dealloc(heap_t *heap)
     }
 }
 
-/* HEPERS */
+/* HELPERS */
 
 static void collect(heap_t *heap)
 {
@@ -122,7 +117,6 @@ static void collect(heap_t *heap)
    }
 }
 
-
 static size_t verify_size(heap_t *heap, size_t size)
 {
   if(size > FIXED_SIZE)
@@ -135,9 +129,7 @@ static size_t verify_size(heap_t *heap, size_t size)
   return fixed_sizes[index];
 }
 
-
 static void remove_page_chunks_from_bin(heap_t *heap, page_t *page)
-
 {
   chunk_t *chunk = page->chunks;
 
@@ -154,7 +146,6 @@ static void remove_page_chunks_from_bin(heap_t *heap, page_t *page)
 
 static page_t *select_heap_page(heap_t *heap, page_t *page, size_t size)
 {
-  /* allocated new page if no suitable is avail */
   if(!page)
   {
     page = create_page(heap->next_allocation, size, heap->os_page_size);

@@ -6,7 +6,7 @@
  size_t ranged_sizes[31] = {
                            514, 1018, 1024,              // 8
                            1025, 2000, 2048,              // 9
-                           2049, 3000, 4096,              // 10
+                           2300, 3000, 4096,              // 10
                            4097, 6000, 8192,              // 11
                            8193, 12000, 16384,            // 12
                            16385, 25000, 32768,           // 13
@@ -50,6 +50,27 @@ Test(asserts, get_correct_bin_index_fixed_sizes)
   dealloc();
 }
 
+
+Test(asserts, get_correct_bin_index_ranged_sizes)
+{
+
+  malloc_test(10);
+
+  int i = 0;
+  while(ranged_sizes[i] != 0)
+   {
+
+  u_int8_t result = get_bin_index(ranged_sizes[i]);
+
+  cr_assert(result == expected[i], "size %lu does not return correct index. result -> %i | should be -> %i", ranged_sizes[i], result, expected[i]);
+      i++;
+   }
+
+  dealloc();
+}
+
+
+
 Test(asserts, bin_doubly_linked_list_is_sorted)
 {
 
@@ -80,23 +101,6 @@ Test(asserts, bin_doubly_linked_list_is_sorted)
   }
 }
 
-Test(asserts, get_correct_bin_index_ranged_sizes)
-{
-
-  malloc_test(10);
-
-  int i = 0;
-  while(ranged_sizes[i] != 0)
-   {
-
-  u_int8_t result = get_bin_index(ranged_sizes[i]);
-
-  cr_assert(result == expected[i], "size %lu does not return correct index. result -> %i | should be -> %i", ranged_sizes[i], result, expected[i]);
-      i++;
-   }
-
-  dealloc();
-}
 
 
 Test(asserts, add_fixed_sized_chunks_to_bin)
