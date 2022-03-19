@@ -33,12 +33,6 @@ $(TARGET): $(OBJS)
 $(OBJ)/%.o: $(SRC)/%.c 
 	${CC} ${CFLAGS} -c $< -o $@
 
-let_leak: $(OBJS)
-	$(CC) -o $(TARGET) $(OBJS) $(CFLAGS_NO_SANINATIZE) $(LDFLAGS) $(LDLIBS)
-
-$(OBJ)/%.o: $(SRC)/%.c 
-	${CC} ${CFLAGS_NO_SANINATIZE} -c $< -o $@
-
 test: $(TEST_OBJS)
 	$(CC) -o $(TEST)/test $(TEST_OBJS) $(TESTS) $(TESTFLAGS); ./$(TEST)/test
 

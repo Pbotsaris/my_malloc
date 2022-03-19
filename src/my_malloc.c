@@ -59,8 +59,9 @@ void print_alloced_chunks(void)
 {
   if(was_not_initialized(&heap)) return;
 
-  printf("Alloced chunks:\n");
+  printf("\n\033[0;36m* Alloced chunks:\n");
   map_print(&heap.alloced_chunks);
+  printf("\n\033[0m\n");
 }
 
 void dump_alloced_chunks(chunk_t *array_to_dump[])
@@ -137,7 +138,9 @@ void print_freed(void)
 {
   if(was_not_initialized(&heap)) return;
 
+  printf("\033[0;35m\n* Freed chunks (bin):\n");
   heap.bin.print(&heap.bin);
+  printf("\n\033[0m\n");
 }
 
 chunk_t *move_from_alloced_chunks(void *pointer)
