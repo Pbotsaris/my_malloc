@@ -21,19 +21,19 @@ Clean
 
 ## Terminology
 
- * heap:  The "virtual" heap of `my_malloc`. 
- * pages: A list of pages of allocated memory.
- * chunk: A chunk of user requested memory. 
- * bin: the data structure for freed memory chunks.
- * alloced_chunks: a hash of allocated memory chunks.
+ * **heap**:  The "virtual" heap of `my_malloc`. 
+ * **pages**: A list of pages of allocated memory.
+ * **chunk**: A chunk of user requested memory. 
+ * **bin**: the data structure for freed memory chunks.
+ * **alloced_chunks**: a hash table of allocated memory chunks.
 
 ## Implementation
 
 ### Pages
 
-`my_malloc` organizes allocations in pages of memory chunks. Pages can have 3 fixed sizes `PAGE_SMALL= 1 * PAGESIZE`, `PAGE_MEDIUM= 10 * PAGESIZE` and `PAGE_LARGE= 100 * PAGESIZE`. 
+`my_malloc` organizes allocations in pages of memory chunks. Pages can have 3 fixed sizes `PAGE_SMALL = 1 * PAGESIZE`, `PAGE_MEDIUM = 10 * PAGESIZE` and `PAGE_LARGE = 100 * PAGESIZE`. 
 
-You can check your page size on your machine with `getconf PAGESIZE`(linux). If the requested allocation is greater than `PAGE_LARGE`, a page will grow dynammically with the size of the allocation.
+You can check your page size on your machine with `getconf PAGESIZE`(linux). If the requested allocation is greater than `PAGE_LARGE`, a page with the exact size of the allocation will be requested.
 
 
                       page 01                     page 02                      page 03
@@ -49,7 +49,7 @@ You can check your page size on your machine with `getconf PAGESIZE`(linux). If 
 
 
 When a new page is allocated, `my_malloc` stores metadata about the page on the top of the buffer. The rest of the memory is dedicated to user requested allocation.
-Below an example of a page with two allocations:
+Below an example of a page with two allocations.
 
 
                          metadata     chunk         chunk           user memory
@@ -57,7 +57,7 @@ Below an example of a page with two allocations:
           PAGE_SMALL   | 40 bytes |  16 bytes  | 32 bytes  |          ~4.8K               |   
                        --------------------------------------------------------------------
                                                            ^                              ^
-                                                          page.size =  88                 page.capacity = 4960
+                                             page.size =  88           page.capacity = 4960
 
 ### Chunks
 Chunks are created upon a memory request from the user.  Every chunk contain its own metadata such as the fields `size` and `pointer`. The allocated chunks live in the `heap.allocated_chunks` hash table.
@@ -66,23 +66,26 @@ Memory addresses are unique so their are used as the key of the hash table while
 
 This hash table resolves collision with separate channing.
 
-                              metadata                   user memory
-                       ------------------------------------------------------------------
-           CHUNK       |      48 bytes  |                512 bytes                      |   chunk.size = 512
-                       ------------------------------------------------------------------
-                                       
+                           metadata                   user memory
+                    ------------------------------------------------------------------
+        CHUNK       |      48 bytes  |                512 bytes                      |   
+                    ------------------------------------------------------------------
+                                    
 
-                    index         
+                 index         
 
-                      0  | key: 0x7f8de02567c8,  pair: 2000 |   ->  | key: 0x7f8...,  size: 16   |  ->  NULL
-          ALLOCED     1  | key: 0x7f8de025b618,  size: 2039 |   ->  NULL
-          CHUNKS      2  | key: 0x7f8de02a9eb8,  size: 4034 |   ->  | key: 0x7f8...,  size: 2000 |  ->  NULL
-                      3  | key: 0x7f8de02ac9e0,  size: 512  |   ->  NULL
+                   0  | key: 0x7f8...,  pair: 2000 | -> | key: 0x7f8...,  size: 16 |  
+       ALLOCED     1  | key: 0x7f8...,  size: 2039 | 
+       CHUNKS      2  | key: 0x7f8...,  size: 4034 | -> | key: 0x7f8...,  size: 32 | 
+                   3  | key: 0x7f8...,  size: 512  |  
 
 
 ### The bin
 
-The bin is array of sorted doubly linked lists with freed chunks to be reused as users requests for more memory. The array has 19 indexes where each corresponds of a size class.
+The bin is array of sorted doubly linked lists with freed chunks to be reused as users requests for more memory. Note that the `bin` is only used when all the memory blocks
+in the `page.buffer` has been depleted.
+
+The `bin` array contains 19 indexes where each corresponds of a size class.
 `my_malloc` will look for the first chunk that fits the requested size. The linked list is sorted though so the first fit will also be the best available fit.
 
 To optimize for speed (while consequently creating more fragmentation), the allocator uses fixed sizes for small allocation while larger allocations can be of any range. 
@@ -118,9 +121,9 @@ An `OFFSET` of two compensates that the size classes start at `2^2` instead of `
 
 ### Garbage collection
 
-Everytime a user calls `my_free` the allocator will check if any pages have zero allocation for more than one malloc/free lifecycle and return the block of memory to the kernel.
+Everytime a user calls `my_free` the allocator will check if any pages have zero allocation for more than one malloc/free lifecycle and return that block of memory to the kernel.
 Every page holds references to its chunks via the linked list `page.chunks` and as a doubly liked list, `bin` nodes hold a reference to both the next and previous nodes. 
-This gives the allocator the ability to remove chunks by simply iterating through `page.chunk` instead of scanning the whole `bin` data structure.
+This gives the allocator the ability to remove chunks from the `bin` by simply iterating through the relevant chunks in`page.chunks` instead of scanning the whole `bin` data structure.
 
 ## tests
 
