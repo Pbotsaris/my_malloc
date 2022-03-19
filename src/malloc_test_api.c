@@ -17,6 +17,11 @@ void *malloc_test(size_t size)
   return heap_test.alloc(&heap_test, size);
 }
 
+void *calloc_test(size_t n, size_t size)
+{
+  return malloc_test(size * n);
+}
+
 void *realloc_test(void *pointer, size_t size)
 {
   if(is_null(pointer) || was_not_initialized(&heap_test) || has_invalid_size(size))

@@ -9,16 +9,13 @@
   pointer = realloc_test(pointer, 10);
 
   cr_assert(!pointer, "Realloc did not return NULL when heap was not initialized");
-
 }
 
  Test(asserts, realloc_with_null_pointer_fails)
 {
-
   void *pointer = realloc_test(NULL, 10);
 
   cr_assert(!pointer, "Realloc did not return NULL when heap was not initialized");
-
 }
 
  Test(asserts, realloc_same_size_returns_same_pointer)
@@ -47,6 +44,9 @@
   dealloc();
 }
 
+ Test(asserts, calloc_returns_a_valid_pointer)
+{
+  void *pointer = calloc_test(sizeof(int), 10);
 
-
-
+  cr_assert(pointer, "calloc did not return a valid pointer");
+}
