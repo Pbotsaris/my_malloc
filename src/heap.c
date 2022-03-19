@@ -56,7 +56,6 @@ static void hfree(heap_t *heap, void *pointer)
   freed_chunk->page->alloced_count   -= 1;
 }
 
-
 static void *alloc_from_page(heap_t *heap, page_t *page, size_t size)
 {
 
