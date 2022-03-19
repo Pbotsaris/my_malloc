@@ -1,5 +1,5 @@
 #include <criterion/criterion.h>
-#include "../include/malloc_test_api.h"
+#include "../include/my_malloc.h"
 
 /* sizes needs to take most of the mage so it doesn't try to allocate from remaining page memory */
   size_t sizes[] = {2000, 20000, 200000, 500000, 0 }
@@ -13,7 +13,7 @@ Test(asserts, free_uses_bin_when_chunk_is_avail)
   while(sizes[i] != 0)
 
     {
-      void *pointer = malloc_test(sizes[i]);
+      void *pointer = my_malloc(sizes[i]);
 
       chunk_t *alloced_chunk = find_alloc(pointer);
       chunk_t *freed_chunk = find_freed_pointer(pointer);
@@ -21,7 +21,7 @@ Test(asserts, free_uses_bin_when_chunk_is_avail)
       cr_assert(alloced_chunk && alloced_chunk->pointer , "chunk does not exist in heap->alloced_chunks after allocation");
       cr_assert(!freed_chunk , "chunk exists in the bin before calling free");
 
-      free_test(pointer);
+      my_free(pointer);
 
       freed_chunk = find_freed_pointer(pointer);
       alloced_chunk = find_alloc(pointer);
@@ -29,7 +29,7 @@ Test(asserts, free_uses_bin_when_chunk_is_avail)
       cr_assert(!alloced_chunk, "chunk exists in heap->alloced_chunks after free");
       cr_assert(freed_chunk && freed_chunk->pointer == pointer , "free does not use chunks from the bin");
 
-      pointer = malloc_test(sizes[i]);
+      pointer = my_malloc(sizes[i]);
       freed_chunk = find_freed_pointer(pointer);
       alloced_chunk = find_alloc(pointer);
 

@@ -1,23 +1,23 @@
 #include <criterion/criterion.h>
-#include "../include/malloc_test_api.h"
+#include "../include/my_malloc.h"
 
 
  Test(asserts, garbage_collection_removes_first_pages_from_heap)
 {
 
   /* page 1 */
- void *p1 = malloc_test(4060); 
+ void *p1 = my_malloc(4060); 
 
   /* page 2 */
-  void *p2 = malloc_test(840); 
-  malloc_test(855);
+  void *p2 = my_malloc(840); 
+  my_malloc(855);
 
   page_t *pages = get_heap_pages();
 
  cr_assert(pages  && pages->next && !pages->next->next,  "Number of pages after allocation does not match.");
 
-  free_test(p1);
-  free_test(p2);
+  my_free(p1);
+  my_free(p2);
 
   pages = get_heap_pages();
 
@@ -33,18 +33,18 @@
 {
 
  /* page 1 */
- void *p1 = malloc_test(4060); 
+ void *p1 = my_malloc(4060); 
 
   /* page 2 */
-  void *p2 = malloc_test(840); 
+  void *p2 = my_malloc(840); 
 
   page_t *pages = get_heap_pages();
 
  cr_assert(pages  && pages->next && !pages->next->next,  "Number of pages after allocation does not match.");
 
   /* change the order to free last page */
-  free_test(p2);
-  free_test(p1);
+  my_free(p2);
+  my_free(p1);
 
   pages = get_heap_pages();
 
@@ -60,13 +60,13 @@
 {
 
  /* page 1 */
-   malloc_test(4060); 
+   my_malloc(4060); 
 
   /* page 2 */
-  void *p2 = malloc_test(4060); 
+  void *p2 = my_malloc(4060); 
 
   /* page 3 */
-  void *p3 = malloc_test(840); 
+  void *p3 = my_malloc(840); 
 
 
   page_t *pages = get_heap_pages();
@@ -74,8 +74,8 @@
  cr_assert(pages  && pages->next && pages->next->next && !pages->next->next->next,  "Number of pages after allocation does not match.");
 
   /* free page 2 then the next free will trigger collector */
-  free_test(p2);
-  free_test(p3);
+  my_free(p2);
+  my_free(p3);
 
   pages = get_heap_pages();
 
@@ -94,25 +94,25 @@
    * 4056 / 4 (four allocations) = 1014
    */
 
-  void *page1_chunk1 = malloc_test(966); // 966 + 48 = 1014
-  void *page1_chunk2 = malloc_test(966); 
-  void *page1_chunk3 = malloc_test(966);
-  void *page1_chunk4 = malloc_test(966);
+  void *page1_chunk1 = my_malloc(966); // 966 + 48 = 1014
+  void *page1_chunk2 = my_malloc(966); 
+  void *page1_chunk3 = my_malloc(966);
+  void *page1_chunk4 = my_malloc(966);
 
-  malloc_test(840); 
-  void *page2_chunk2 = malloc_test(840); 
+  my_malloc(840); 
+  void *page2_chunk2 = my_malloc(840); 
 
-  free_test(page1_chunk1);
-  free_test(page1_chunk2);
-  free_test(page1_chunk3);
-  free_test(page1_chunk4);
+  my_free(page1_chunk1);
+  my_free(page1_chunk2);
+  my_free(page1_chunk3);
+  my_free(page1_chunk4);
 
   chunk_t *chunk1 = find_freed_pointer(page1_chunk1);
   chunk_t *chunk2 = find_freed_pointer(page1_chunk2);
 
   cr_assert(chunk1 && chunk2 ,  "Chunks not in the bin after free");
 
-  free_test(page2_chunk2);
+  my_free(page2_chunk2);
 
   chunk1 = find_freed_pointer(page1_chunk1);
   chunk2 = find_freed_pointer(page1_chunk2);
@@ -120,8 +120,4 @@
 
   cr_assert(page2_chunk && !chunk2 && !chunk1 ,  "chunks were not removed from bin after collection");
 }
-
-
-
-
 
