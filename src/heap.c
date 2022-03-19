@@ -3,6 +3,7 @@
 /* API */
 static void *alloc(heap_t *heap, size_t size);
 static void hfree(heap_t *heap, void *pointer);
+static void *ralloc(heap_t *heap, void *pointer, size_t size);
 static void dealloc(heap_t *heap);
 
 /* helpers */
@@ -13,11 +14,13 @@ static size_t verify_size(heap_t *heap, size_t size);
 
 static page_t *select_heap_page(heap_t *heap, page_t *page, size_t size);
 static void remove_page_chunks_from_bin(heap_t *heap, page_t *page);
+static bool has_same_size(chunk_t *chunk, size_t size);
 
 void initialize_heap(heap_t *heap, size_t size)
 {
   heap->alloc                  = alloc;
   heap->dealloc                = dealloc; 
+  heap->realloc                = ralloc;
   heap->free                   = hfree;
   heap->os_page_size           = sysconf(_SC_PAGESIZE);   
   heap->next_allocation        = 0x00;                   
@@ -31,9 +34,6 @@ void initialize_heap(heap_t *heap, size_t size)
 
 static void *alloc(heap_t *heap, size_t size)
 {
-   if(size == 0)
-     return NULL;
-
   page_t *page             = find_page(heap->pages, (size + sizeof(chunk_t)));
   void *pointer            = NULL;
   size                     = verify_size(heap, size);
@@ -45,6 +45,26 @@ static void *alloc(heap_t *heap, size_t size)
       pointer             = alloc_from_page(heap, page, size);
 
    return pointer;
+  }
+
+static void *ralloc(heap_t *heap, void *pointer, size_t size)
+{
+   chunk_t * chunk = map_move(&heap->alloced_chunks, pointer);
+   size            = verify_size(heap, size);
+
+    if(!chunk)
+      return NULL;
+
+   if(has_same_size(chunk, size))
+   {
+     map_insert(&heap->alloced_chunks ,chunk);
+     return pointer;
+   }
+
+   heap->bin.add(&heap->bin, chunk);
+   chunk->page->alloced_count   -= 1;
+
+   return alloc(heap, size);
   }
 
 static void hfree(heap_t *heap, void *pointer)
@@ -154,3 +174,6 @@ static page_t *select_heap_page(heap_t *heap, page_t *page, size_t size)
 
   return page;
 }
+
+static bool has_same_size(chunk_t *chunk, size_t size) { return size  == (u_int32_t)chunk->size; }
+

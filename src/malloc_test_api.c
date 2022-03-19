@@ -1,24 +1,35 @@
 #include "../include/malloc_test_api.h"
 
+static bool has_invalid_size(size_t size);
+static bool was_not_initialized(heap_t *heap);
+static bool is_null(heap_t *pointer);
+
 heap_t heap_test;
 
 void *malloc_test(size_t size)
 {
-  static bool initialized = false;
-
-  if(!initialized)
-    {
+  if(has_invalid_size(size))
+    return NULL;
+   
+  if(!heap_test.alloc)
       initialize_heap(&heap_test, size);
-      initialized = true;
-    }
 
-   void *pointer = heap_test.alloc(&heap_test, size);
+  return heap_test.alloc(&heap_test, size);
+}
 
-  return pointer;
+void *realloc_test(void *pointer, size_t size)
+{
+  if(is_null(pointer) || was_not_initialized(&heap_test) || has_invalid_size(size))
+    return NULL;
+
+  return heap_test.realloc(&heap_test, pointer ,size);
 }
 
 void free_test(void *pointer)
 {
+  if(is_null(pointer) || was_not_initialized(&heap_test))
+     return;
+
   heap_test.free(&heap_test, pointer);
 }
 
@@ -26,7 +37,6 @@ void dealloc(void)
 {
   heap_test.dealloc(&heap_test);
 }
-
 
 void print_alloced_chunks(void)
 {
@@ -93,4 +103,9 @@ chunk_t *move_from_alloced_chunks(void *pointer)
 {
  return map_move(&heap_test.alloced_chunks, pointer);
 }
+
+
+static bool has_invalid_size(size_t size)  {return size == 0 || size >= MAX_SIZE; } 
+static bool was_not_initialized(heap_t *heap)  {return !heap->alloc; }
+static bool is_null(heap_t *pointer)  {return !pointer; }
 

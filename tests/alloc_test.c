@@ -15,6 +15,23 @@ bool contains(chunk_t *pointer_array[], void *pointer)
 }
 
 
+ Test(asserts, allocation_with_zero_size)
+ {
+   void *pointer = malloc_test(0);
+ 
+   cr_assert(pointer == NULL, "allocation with invalid size does not return NULL. Was %p, should be NULL", pointer);
+
+ }
+
+ Test(asserts, allocation_with_invalid_size)
+ {
+   void *pointer = malloc_test(-1);
+ 
+   cr_assert(pointer == NULL, "allocation with invalid size does not return NULL. Was %p, should be NULL", pointer);
+
+ }
+
+
  Test(asserts, allocation_returns_pointer)
  {
    void *pointer = malloc_test(30);

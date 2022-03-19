@@ -1,10 +1,13 @@
 #ifndef MALLOC_TEST_API
 #define MALLOC_TEST_API
 
+#define MAX_SIZE 4294967295
+
 #include "../include/heap.h"
 
 void *malloc_test(size_t size);
 void free_test(void *pointer);
+void *realloc_test(void *pointer, size_t size);
 
 void dealloc(void);
 

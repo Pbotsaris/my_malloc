@@ -13,6 +13,7 @@
 #include "../include/bin.h"
 
 #define NUM_OF_PAGES 1
+#define MAX_SIZE 4294967295
 
 typedef struct heap
 {
@@ -24,6 +25,7 @@ typedef struct heap
 
   void         (*create_page)(struct heap*, page_t, size_t);
   void         *(*alloc)(struct heap*, size_t);
+  void         *(*realloc)(struct heap*, void*, size_t);
   void         (*free)(struct heap*, void*);
   void         (*dealloc)(struct heap*);
  }heap_t;

@@ -91,7 +91,7 @@ static page_t *initialize_page(void *buffer, size_t size)
   /* adding the metadata to the top of the buffer */
 
   page_t *page                 = (page_t*)buffer;
-  page->capacity               = size; 
+  page->capacity               = (u_int32_t)size; 
   page->alloced_count          = 0; 
   page->buffer                 = (void*)((int32_t*)buffer + sizeof(page_t));
   page->size                   = sizeof(page_t);
