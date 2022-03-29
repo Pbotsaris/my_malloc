@@ -38,7 +38,7 @@
    chunk_t *found = find_alloc(pointer_two);
    chunk_t *free_found = find_freed_pointer(pointer);
 
-  cr_assert(found && found->pointer == pointer_two, "realloc pointer was not found in heap->alloced_chunks. returned -> %p, should be: %p", found, pointer_two);
+  cr_assert(found && found->pointer == pointer_two, "realloc pointer was not found in heap->alloced_chunks. returned -> %p, should be: %p", found, (void*)pointer_two);
   cr_assert(free_found && free_found->pointer == pointer, "freed pointer was not found in the heap->bin");
 
   dealloc();

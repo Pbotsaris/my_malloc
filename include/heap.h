@@ -14,6 +14,7 @@
 
 #define NUM_OF_PAGES 1
 #define MAX_SIZE 4294967295
+#define PAGE_SIZE 4096
 
 typedef struct heap
 {
@@ -34,8 +35,3 @@ void initialize_heap(heap_t *heap, size_t size);
 
 #endif
 
-
-/* 
-*  NOTE: you have a problem with garbage collection. You need to be able to identify all the freed chunks in the bin for a page
-*        in order to return it to the os.
-*/

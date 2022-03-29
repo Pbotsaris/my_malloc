@@ -12,7 +12,7 @@ CC=gcc
 TARGET=$(BIN)/my_malloc
 RM=rm -rf
 
-$(shell mkdir -p obj bin)
+$(shell mkdir -p obj bin tests/obj)
 
 SRCS=$(wildcard $(SRC)/*.c)
 TESTS=$(wildcard $(TEST)/*.c)

@@ -23,7 +23,7 @@ void initialize_heap(heap_t *heap, size_t size)
   heap->dealloc                = dealloc; 
   heap->realloc                = ralloc;
   heap->free                   = hfree;
-  heap->os_page_size           = sysconf(_SC_PAGESIZE);   
+  heap->os_page_size           = PAGE_SIZE;
   heap->next_allocation        = 0x00;                   
 
   heap->pages = create_page(heap->next_allocation, size, heap->os_page_size);
